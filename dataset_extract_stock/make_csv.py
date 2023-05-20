@@ -6,35 +6,49 @@ def csvInit(filename):
     element from dataset that will finally be put inside
     the table CINE_EMOTION.movie.
     the first element in each line will be the copies number of a
-    line we found in original file.
-    The second and last element will be the imdb_id of each films
-    we find in the original file.
+    lines we found in source file.
+    The second and last element will be the imdb id of each films
+    we found in the source file.
 
+    Args:
+        filename (str): Source file
     """
-    # Create csv file
-    filename = filename + '.csv'
-    numcopy = 0
-    imdb_id =""
-    with open(filename, 'w', newline='') as csvfile:
+
+    
+    # create csv file
+    csvfile = filename.replace('txt', 'csv')
+    with open(csvfile, 'w', newline='') as csvfile:
         fieldnames = ['COPIES NUMBER', 'IMDB ID', 'TITLE', 'RELEASE YEAR', 'IMDB RATING']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
 
-        # open source file and read it
-        
-        writer.writerow({'COPIES NUMBER':numcopy, 'IMDB ID': imdb_id})
-        #writer.writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
-        #writer.writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
-    csvfile.close()
+        # mask to get imdb_id from url
+        a = "http://www.imdb.com/title/"
+        b = "/usercomments"
 
-    
-    # Open original file
-    # get url, count copies, and isolate imdb_id
-    # put in csv file first the copies number, secondly the imdb_id
-    
+        imdb_id =""
+        # open source file to get datas from it
+        with open("../testfile.txt", 'r') as f:
+            for line in f.readlines():
 
+                # get imdb Id
+                line = line.replace(a, '')
+                line = line.replace(b, '')
 
-    # close all files
-   
-csvInit("monFichier")
+                # exclude all line return in each lines except for the last line
+                if '\n' in line:
+                    line = line.replace('\n', '')
+
+                if line == imdb_id:
+                    cmpt += 1
+                else:
+                    if imdb_id != "":
+                        # put cmpt and imdb Id in csv file
+                        writer.writerow({'COPIES NUMBER':cmpt, 'IMDB ID': imdb_id})
+                        
+                    imdb_id = line
+                    cmpt = 1
+            # put cmpt and imdb Id in csv file
+            writer.writerow({'COPIES NUMBER':cmpt, 'IMDB ID': imdb_id})
+

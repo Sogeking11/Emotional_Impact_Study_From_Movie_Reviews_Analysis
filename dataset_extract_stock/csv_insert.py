@@ -1,17 +1,37 @@
+import sys
+import pandas
 
 
+import scrap_data as scrap
 
-# operation
-# Here we get all the lines from the file, for each line we add his title and append it in a list
-filelines = []
-"""with open(file_url, 'r') as f:
-    for line in f.readlines():
-        url_to_scrap = line[0:-13]
-        title = getTitle(url_to_scrap)
-        filelines.append(line.rstrip('\n') + "," + title + '\n')
-        print(title)
+def feedCsv(csvfile):
+    """
+    Take csv as parameter and feed it with TITLE, RELEASE YEAR, IMDB RATING properties
+    for each rows by using scrap_data.py module to find properties
+    on IMDB website.
+    Cause it can take long time to scrap datas a countdown will permit to know
+    when operation will finished on stdout.
 
-# Here we just add in the precedent file each element from the list to a new line
-with open(file_url, 'w') as f:
-    for line in filelines:
-        f.write(line)"""
+    Args:
+        csvfile (str): the csv file that have been made by make_csv.py module
+    """
+    df = pandas.read_csv(csvfile)
+    totalLines = len(df)
+    for i in range(totalLines):
+        # get imdb id from data frame
+        imdb_id = df.loc[i, 'IMDB ID']
+
+        xpath = scrap.data_prop["title"]  
+        df.loc[i, 'TITLE'] = scrap.getData(imdb_id, xpath)
+
+        xpath = scrap.data_prop["release_year"]
+        df.loc[i, 'RELEASE YEAR'] = scrap.getData(imdb_id, xpath)
+
+        xpath = scrap.data_prop["imdb_rating"]
+        df.loc[i, 'IMDB RATING'] = scrap.getData(imdb_id, xpath)
+
+        # countdown
+        sys.stdout.write('\r'+ str(totalLines-(i+1)) + "/"+ str(totalLines))                
+        sys.stdout.flush()
+
+    df.to_csv(csvfile)
