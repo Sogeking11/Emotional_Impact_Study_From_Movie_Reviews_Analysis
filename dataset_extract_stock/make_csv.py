@@ -12,31 +12,35 @@ def csvInit(filename):
 
     Args:
         filename (str): Source file
+
+    Returns:
+        str: return csv filename
     """
+
+    # mask to get imdb_id from url
+    a = "http://www.imdb.com/title/"
+    b = "/usercomments"
 
     
     # create csv file
-    csvfile = filename.replace('txt', 'csv')
-    with open(csvfile, 'w', newline='') as csvfile:
+    csvFileName = filename.replace('txt', 'csv')
+    with open(csvFileName, 'w', newline='') as csvfile:
         fieldnames = ['COPIES NUMBER', 'IMDB ID', 'TITLE', 'RELEASE YEAR', 'IMDB RATING']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
 
-        # mask to get imdb_id from url
-        a = "http://www.imdb.com/title/"
-        b = "/usercomments"
-
+        # Initiate imdb_id with no value before reading its first value from source file
         imdb_id =""
         # open source file to get datas from it
-        with open("../testfile.txt", 'r') as f:
+        with open(filename, 'r') as f:
             for line in f.readlines():
 
-                # get imdb Id
+                # get imdb Id from mask
                 line = line.replace(a, '')
                 line = line.replace(b, '')
 
-                # exclude all line return in each lines except for the last line
+                # exclude all carriage return in each lines except for the last line
                 if '\n' in line:
                     line = line.replace('\n', '')
 
@@ -52,3 +56,5 @@ def csvInit(filename):
             # put cmpt and imdb Id in csv file
             writer.writerow({'COPIES NUMBER':cmpt, 'IMDB ID': imdb_id})
 
+    
+    return csvFileName
