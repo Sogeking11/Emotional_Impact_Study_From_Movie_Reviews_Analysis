@@ -22,12 +22,23 @@ def stockMovies_csv(csvFile):
 
 
 
-def create_feed_csvFiles():
+def create_feed_csvFiles(filename):
     """
     Project part One:
     Prepare datas in csv files before send them to database.
     """
         
+    # create csv file
+    csvfilename = csv.csvInit(filename)
+
+    # feed csv file
+    csv_insert.feedCsv(csvfilename)
+
+    return csvfilename
+
+
+if __name__ == "__main__":
+
     path = "../aclImdb/"
 
     # files concerned
@@ -36,18 +47,11 @@ def create_feed_csvFiles():
                 "train/urls_neg.txt",
                 "train/urls_pos.txt",
                 "train/urls_unsup.txt"]
-
-    # make csv files
+    
+    # make csv files and stock them in CINE_EMOTION DB
     for i in range(len(fileList)):
         filename = path + fileList[i]
+        csvFileName = create_feed_csvFiles(filename)
 
-        # create csv file
-        csvfilename = csv.csvInit(filename)
-
-        # feed csv file
-        csv_insert.feedCsv(csvfilename)
-
-if __name__ == "__main__":
-
-    #create_feed_csvFiles()
-    stockMovies_csv("../aclImdb/test/urls_neg.csv")
+        #create_feed_csvFiles()
+        stockMovies_csv(csvFileName)

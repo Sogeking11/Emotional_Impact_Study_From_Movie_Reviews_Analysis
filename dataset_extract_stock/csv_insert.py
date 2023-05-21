@@ -18,7 +18,7 @@ def feedCsv(csvfile):
     df = pandas.read_csv(csvfile)
     
     totalLines = len(df)
-    totalLines = totalLines//100 # just a try
+    totalLines = totalLines
     for i in range(totalLines):
         # get imdb id from data frame
         imdb_id = df.loc[i, 'IMDB ID']
