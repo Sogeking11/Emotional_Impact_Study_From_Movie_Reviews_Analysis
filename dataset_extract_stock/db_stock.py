@@ -37,15 +37,16 @@ def add_datas(cnx: Connection , data: p.DataFrame):
     # on crée un curseur. Un curseur permet de parcourir les enregistrements d'un résultat
     curseur = cnx.cursor()
     # on crée une requête sql pour ajouter les clients
-    sql = "INSERT INTO movie (imdb_id, release_year, imdb_rating, title) \
+    sql = "INSERT INTO movie (id_imdb, release_date, review_score, title) \
         VALUES (%s, %s, %s, %s)"
-    
+    i = 0
     for index, row in data.iterrows():
+        i += 1 
         # check and change NAN values
         if p.isna(row["RELEASE YEAR"]):
             row["RELEASE YEAR"] = 0
         if p.isna(row["IMDB RATING"]):
-            row["IMDB RATING"] = "None"
+            row["IMDB RATING"] = 0
         if p.isna(row["TITLE"]):
             row["TITLE"] = "None"
 

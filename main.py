@@ -11,13 +11,13 @@ def stockMovies_csv(csvFile):
     db_password = mySecrets.secrets["DATABASE_PASSWORD"]
     db_database = mySecrets.secrets["DATABASE_NAME"]
 
-    # lecture du csv conv en data frame
+    # read csv and convert dataframe
     df = pandas.read_csv(csvFile)
     
-    # on se connecte à la base de données. C'est comme lancer un appel téléphonique
+    # connect to BDD
     cnx = db_stock.connect_to_db(db_host, db_port, db_user, db_password, db_database)
     
-    # on ajoute un client
+    # add datas
     db_stock.add_datas(cnx, df)
 
 
@@ -38,20 +38,24 @@ def create_feed_csvFiles(filename):
 
 
 if __name__ == "__main__":
-
+    
     path = "../aclImdb/"
 
     # files concerned
-    fileList = ["test/urls_neg.txt",
+    fileList = [# "test/urls_neg.txt",
                 "test/urls_pos.txt",
                 "train/urls_neg.txt",
                 "train/urls_pos.txt",
                 "train/urls_unsup.txt"]
     
     # make csv files and stock them in CINE_EMOTION DB
+    csvFilename_list = []
     for i in range(len(fileList)):
         filename = path + fileList[i]
         csvFileName = create_feed_csvFiles(filename)
+        csvFilename_list.append(csvFileName)
 
-        #create_feed_csvFiles()
-        stockMovies_csv(csvFileName)
+
+    #create_feed_csvFiles()
+    for i in range(len(csvFilename_list)):
+        stockMovies_csv(csvFilename_list[i])
