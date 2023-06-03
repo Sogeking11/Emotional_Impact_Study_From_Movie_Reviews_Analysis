@@ -4,6 +4,7 @@ from dataset_extract_stock import csv_insert
 from dataset_extract_stock import db_stock
 from dataset_extract_stock import mySecrets
 
+
 def stockMovies_csv(csvFile):
     db_host = mySecrets.secrets["DATABASE_HOST"]
     db_port = mySecrets.secrets["DATABASE_PORT"]
@@ -41,8 +42,8 @@ if __name__ == "__main__":
     
     path = "../aclImdb/"
 
-    # files concerned
-    fileList = [# "test/urls_neg.txt",
+    ''' # files concerned
+    fileList = ["test/urls_neg.txt",
                 "test/urls_pos.txt",
                 "train/urls_neg.txt",
                 "train/urls_pos.txt",
@@ -53,9 +54,17 @@ if __name__ == "__main__":
     for i in range(len(fileList)):
         filename = path + fileList[i]
         csvFileName = create_feed_csvFiles(filename)
-        csvFilename_list.append(csvFileName)
+        csvFilename_list.append(csvFileName)'''
 
 
     #create_feed_csvFiles()
+    csvFilename_list = ["test/urls_neg.csv",
+                "test/urls_pos.csv",
+                "train/urls_neg.csv",
+                "train/urls_pos.csv",
+                "train/urls_unsup.csv"]
+
     for i in range(len(csvFilename_list)):
-        stockMovies_csv(csvFilename_list[i])
+        stockMovies_csv(path + csvFilename_list[i])
+
+    # stockMovies_csv("../aclImdb/test/urls_neg.csv")

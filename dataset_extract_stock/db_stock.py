@@ -39,9 +39,9 @@ def add_datas(cnx: Connection , data: p.DataFrame):
     # on crée une requête sql pour ajouter les clients
     sql = "INSERT INTO movie (id_imdb, release_date, review_score, title) \
         VALUES (%s, %s, %s, %s)"
-    i = 0
+    
     for index, row in data.iterrows():
-        i += 1 
+        
         # check and change NAN values
         if p.isna(row["RELEASE YEAR"]):
             row["RELEASE YEAR"] = 0
