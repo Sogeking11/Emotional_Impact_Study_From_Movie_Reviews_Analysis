@@ -3,8 +3,18 @@ import pandas as p
 import pymysql as maria
 from pymysql.connections import Connection
 
+from dataset_extract_stock import mySecrets
 
-def connect_to_db(host: str, port:int, user: str, password: str, database: str) -> maria.connections.Connection:
+
+credentials = {
+    "db_host": mySecrets.secrets["DATABASE_HOST"],
+    "db_port": mySecrets.secrets["DATABASE_PORT"],
+    "db_user": mySecrets.secrets["DATABASE_USER"],
+    "db_password": mySecrets.secrets["DATABASE_PASSWORD"],
+    "db_database": mySecrets.secrets["DATABASE_NAME"]
+}
+
+def connect_to_db() -> maria.connections.Connection:
     """_summary_ : permet de se connecter à une base de données
     Args:
         host (str): machine sur laquelle se trouve la base de données
@@ -16,11 +26,11 @@ def connect_to_db(host: str, port:int, user: str, password: str, database: str) 
         maria.connections.Connection: appel vers la base de données
     """
     try:
-        connexion = maria.connect(host=host,
-                                  port=port,
-                                  user=user,
-                                  password=password,
-                                  database=database)
+        connexion = maria.connect(host=credentials["db_host"],
+                                  port=credentials["db_port"],
+                                  user=credentials["db_user"],
+                                  password=credentials["db_password"],
+                                  database=credentials["db_databse"])
     except maria.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)

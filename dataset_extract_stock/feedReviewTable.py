@@ -3,37 +3,60 @@ import sys
 import re
 import pandas
 
-
 from db_stock import connect_to_db
-import mySecrets
+
 
 
 def get_numbered_files(directory):
-    # regex
-    a = "_{1}.+"
+    """
+    Generate a dictionnary that got keys corresponding to the position of the review
+    and as value a list wherewe can found the filename and the review's score.
+
+    Args:
+        directory (str): Directory path where we got review files
+
+    Returns:
+        dictionnary: {position :(filename, score)}
+    """
+
+    # regex to extract the review position from filename in directory
+    # according to url text file
+    reg1 = "_{1}.+"
     
     file_dict = {}
-
-    fileNumber = len(os.listdir(directory))
     
     for filename in os.listdir(directory):
+
         # get position from the filename
-        posFile = re.sub(a, "", filename)
+        posFile = re.sub(reg1, "", filename)
+
         # get score reviewfromfilename
         filename = str(filename)
         score = filename.replace(".txt", "")
-        reg = "^.+_"
-        score = re.sub(reg, "", score)
+        # regex to isolate review score in filename
+        reg2 = "^.+_"
+        score = re.sub(reg2, "", score)
         file_dict[posFile] = (filename, score)
-
-        #file_list[posFile] = filename
    
     return file_dict
 
-# will return the unique idMovie to push as foreign key in review table
-# in a part of movie table.
-# this due to copies we have in different dataset files
+
 def get_idMovie(cursor, lineNumber, filmId, startAt):
+    """ 
+    Will return the unique idMovie to push as foreign key in review table
+    in a part of movie table.
+    this due to copies we have in different dataset files
+
+    Args:
+        cursor (DB object): Allow to request our db
+        lineNumber (int): Correspond to the range in movie table where to search id_movie
+        filmId (str): It's the imdb id we are looking for in movie table
+        startAt (int): Row position where to start research
+
+    Returns:
+        list: return the movie table key that will be the foreign key in review table,
+              and the last row that has been searched that will be the start of the next search.
+    """
 
     end = startAt + lineNumber
     if startAt != 0:
@@ -48,49 +71,53 @@ def get_idMovie(cursor, lineNumber, filmId, startAt):
     cursor.execute(sql)
 
     # get result from sql request
-    id_movie = curseur.fetchall()
+    id_movie = cursor.fetchall()
 
     return id_movie[0], end
 
-def pushToReviewTable(cursor, review, score, foreign_id_movie):
+
+def pushToReviewTable(cnx, review, score, foreign_id_movie):
+    """
+    Push record datas in review table.
+
+    Args:
+        cursor (DB object): Allow to request our db
+        review (BloB): The review itself.
+        score (str): Te review score.
+        foreign_id_movie (int): id corresponding to the film concerned by the review.
+    """
     cursor = cnx.cursor()
+
     # sql request
     score = int(score)
     sql = "INSERT INTO review (score, text, movie_idmovie, source, reviewer_id_reviewer) \
         VALUES (%s, %s, %s, %s, %s)"
+    
+    # when we execute, we need to give a value reviewer_id_reviewver cause it can't stay null
+    # that's why we give 12 as value it can be any integer
     cursor.execute(sql,(score, review, foreign_id_movie, "imdb", 12))
 
     cnx.commit()
 
 
 
+def feedReviewTable(source_dict):
+    """
+    Here we have a general function that go inside all csv files generated before.
+    it goes line by line, taking imdb id, go to movie table to take the movie id corresponding.
+    This movie id will be the foreign key in review table.
+    After this, the function goes to the corresponding directory where we can find reviews,
+    retrieve scorefrom filename and the review text to push them on review table without forgot
+    the corresponding foreign key.
 
-
-if __name__ == "__main__":
-
-    print("Hello World !")
-
-    # get cursor from db
-    db_host = mySecrets.secrets["DATABASE_HOST"]
-    db_port = mySecrets.secrets["DATABASE_PORT"]
-    db_user = mySecrets.secrets["DATABASE_USER"]
-    db_password = mySecrets.secrets["DATABASE_PASSWORD"]
-    db_database = mySecrets.secrets["DATABASE_NAME"]
+    Args:
+        source_dict (dictionnary): here we make the link between generated csv files
+                                   and the directory where we can find all reviews.
+    """
 
     # connect to BDD
-    cnx = connect_to_db(db_host, db_port, db_user, db_password, db_database)
+    cnx = connect_to_db()
 
-    # csvfile and directories
-    testPath = "../aclImdb/test/"
-    trainPath = "../aclImdb/train/"
-
-    source_dict = {
-        testPath + "urls_neg.csv": testPath + "neg/",
-        testPath + "urls_pos.csv": testPath + "pos/",
-        trainPath + "urls_neg.csv": trainPath + "neg/",
-        trainPath + "urls_pos.csv": trainPath + "pos/",
-        trainPath + "urls_unsup.csv": trainPath + "unsup/",
-    }
 
     startAt = 0
     end = 0
@@ -106,13 +133,14 @@ if __name__ == "__main__":
         # line number to treat in movie table in that csv
         lineNumber = len(df)
 
-        # stdout to see which file is treated
+        # stdout to see which file is in operation
         sys.stdout.write('\n' + str(csvFile) + '\n')
         sys.stdout.flush()
 
 
-
+        # help to make correspondance between the review file in the directory and the record in the csv file
         row_count = 0
+
         for index, row in df.iterrows():
             review_numb_per_film = row["COPIES NUMBER"]
             filmId_from_csv = row["IMDB ID"]
@@ -138,11 +166,15 @@ if __name__ == "__main__":
                 reviewAndScore = filePosition_dict[str_i]
                 reviewFileName = directory  + "/" + reviewAndScore[0]
                 score = reviewAndScore[1]
+
+                # open file to get review
                 with open(reviewFileName, 'r') as f:
                     review = f.readline()
-                
+
+                # send the review, score and foreign_id_movie in review table
                 pushToReviewTable(cnx, review, score, foreign_id_movie)
 
+            # Init row_count
             row_count = row_count + review_numb_per_film
 
             # countdown
