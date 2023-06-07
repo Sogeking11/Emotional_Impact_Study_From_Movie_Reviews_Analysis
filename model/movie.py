@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, BLOB,LargeBinary, 
+from sqlalchemy import create_engine, Column, Integer, String, BLOB
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 engine = create_engine("mysql+mysqlconnector://db_lm:131272@51.254.205.197:3306/CINEMOTION")
@@ -26,22 +26,22 @@ class Movie(Base):
     title = Column(String(100))
     production_company = Column(String(45))
     pegi = Column(Integer)
-    synopsis = Column(BLOB)
+    sysnopsis = Column(BLOB)
     keywords = Column(BLOB)
     revenue = Column(Integer)
     budget = Column(Integer)
     review_score = Column(Integer)
     release_date = Column(Integer)
 
-myBlob1 = BLOB("Il était une fois..")
-myBlob2 = BLOB("Maréchaux, villipendié, restroctirazion")
+myBlob1 = b'Il etait une fois..'
+myBlob2 = b"Marechaux, villipendie, restroctirazion"
 
 movie1 = Movie(
                     id_imdb='tt34535',
                     title='Vorch',
                     production_company='Warner Bross',
                     pegi='18',
-                    synopsis=myBlob1,
+                    sysnopsis=myBlob1,
                     keywords=myBlob2,
                     revenue=8,
                     budget=75,
