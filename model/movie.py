@@ -2,7 +2,7 @@ from .sqlalchemyconfig import *
 
 # Define the parent table
 class Movie(Base):
-    __tablename__ = 'movies'#
+    __tablename__ = 'movie'#
 
     id = Column(Integer, primary_key=True)
     id_imdb = Column(String(10))
@@ -15,4 +15,4 @@ class Movie(Base):
     budget = Column(Integer)
     review_score = Column(Integer)
     release_date = Column(Integer)
-    reviews = relationship("Review", back_populates="movie")
+    reviews = relationship("Review", back_populates="movie")# here movie refer to parameter movie on class Review

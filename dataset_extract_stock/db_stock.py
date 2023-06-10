@@ -7,11 +7,11 @@ from dataset_extract_stock import mySecrets
 
 
 credentials = {
-    "db_host": mySecrets.secrets["DATABASE_HOST"],
-    "db_port": mySecrets.secrets["DATABASE_PORT"],
-    "db_user": mySecrets.secrets["DATABASE_USER"],
-    "db_password": mySecrets.secrets["DATABASE_PASSWORD"],
-    "db_database": mySecrets.secrets["DATABASE_NAME"]
+    "db_host": mySecrets.DATABASE_HOST,
+    "db_port": mySecrets.DATABASE_PORT,
+    "db_user": mySecrets.DATABASE_USER,
+    "db_password": mySecrets.DATABASE_PASSWORD,
+    "db_database": mySecrets.DATABASE_NAME
 }
 
 def connect_to_db() -> maria.connections.Connection:

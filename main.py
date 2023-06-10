@@ -7,6 +7,9 @@ from model.sqlalchemyconfig import *
 
 if __name__ == "__main__":
 
+    # Create the tables in the database
+    #Base.metadata.create_all(engine)
+
     myBlob1 = b'Il etait encore une fois..'
     myBlob2 = b"C'est alors qu'il ne voulurent pas, comme si..."
 
