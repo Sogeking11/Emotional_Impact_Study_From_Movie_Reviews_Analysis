@@ -1,20 +1,20 @@
 from sqlalchemy import create_engine, Column, Integer, String, BLOB, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
+
+# Create the SDLAlchemy engine and session
 engine = create_engine("mysql+mysqlconnector://db_lm:131272@51.254.205.197:3306/CINEMOTION")
-
-
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
+# Declare the base class for declarative models
 Base = declarative_base()
 
-
+# Define the parent table
 class Movie(Base):
-    __tablename__ = 'movie'
+    __tablename__ = 'movies'#
 
-    id_movie = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     id_imdb = Column(String(10))
     title = Column(String(100))
     production_company = Column(String(45))
@@ -27,22 +27,25 @@ class Movie(Base):
     release_date = Column(Integer)
     reviews = relationship("Review", back_populates="movie")
 
-
+# Define the child table
 class Review(Base):
-    __tablename__ = 'review'
+    __tablename__ = 'reviews'#
 
     id_review = Column(Integer, primary_key=True)
-    movie_id_movie = Column(Integer, ForeignKey('movie.id_movie'))
+    movie_id = Column(Integer, ForeignKey('movies.id'))
     text = Column(BLOB)
-    movie = relationship("Movie", back_populates="review")
+    movie = relationship("Movie", back_populates="reviews")#
 
-Movie.review = relationship("Review", order_by = Review.id_review, back_populates = "movie")
+
+Base.metadata.create_all(engine)
+
+#Movie.reviews = relationship("Review", order_by = Review.id_review, back_populates = "movie")
 
 myBlob1 = b'Il etait une fois..'
 myBlob2 = b"Marechaux, villipendie, restroctirazion"
 
 
-movie1 = Movie(
+movie = Movie(
                     id_imdb='tt34535',
                     title='Vorch',
                     production_company='Warner Bross',
@@ -55,11 +58,11 @@ movie1 = Movie(
                     release_date=2002
                 )
 
-review1 = Review(text=b"Hello de Lu", movie=movie1)
-review2 = Review(text=b"congratulation...", movie=movie1)
+review1 = Review(text=b"Hello de Lu", movie=movie)
+review2 = Review(text=b"congratulation...", movie=movie)
 
 
-session.add(movie1)
+session.add(movie)
 session.add(review1)
 session.add(review2)
 session.commit()
