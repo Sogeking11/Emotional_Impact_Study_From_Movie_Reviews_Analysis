@@ -1,18 +1,18 @@
 from .sqlalchemyconfig import *
 
-# Define the parent table
+# Define Movie table
 class Movie(Base):
     __tablename__ = 'movie'#
 
     id = Column(Integer, primary_key=True)
-    id_imdb = Column(String(10))
     title = Column(String(100))
-    production_company = Column(String(45))
-    pegi = Column(Integer)
-    sysnopsis = Column(BLOB)
-    keywords = Column(BLOB)
+    certification = Column(String(10))
     revenue = Column(Integer)
     budget = Column(Integer)
-    review_score = Column(Integer)
-    release_date = Column(Integer)
+    review_score = Column(Float)
+    release_date = Column(Date)
+    popularity = Column(Float)
+    runtime = Column(Integer)
+    synopsis = Column(BLOB)
     reviews = relationship("Review", back_populates="movie")# here movie refer to parameter movie on class Review
+    countries = relationship("Country", secondary=movie_has_country_ass, back_populates="movies")
