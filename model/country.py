@@ -7,4 +7,4 @@ class Country(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(45))
-    movies = relationship("Movie" , secondary=movie_has_country_ass, back_populates="countries")
+    movies = relationship("Movie" , secondary=movie_has_country_link, back_populates="countries")
