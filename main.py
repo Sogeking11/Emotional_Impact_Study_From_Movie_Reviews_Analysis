@@ -1,16 +1,5 @@
-from model.movie import Movie
-from model.review import Review
-from model.country import Country
-from model.reviewer import Reviewer
-from model.genre import Genre
-from model.keyword import Keyword
-from model.prod_company import Prod_Company
-from model.source import Source
-from model.participant import Participant
-
+from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant
 from model.sqlalchemyconfig import *
-
-
 
 
 
