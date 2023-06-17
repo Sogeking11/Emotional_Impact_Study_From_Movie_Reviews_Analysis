@@ -7,7 +7,7 @@ class Source(Base):
 
     id = Column(Integer, primary_key=True)
     movie_id = Column(Integer, ForeignKey('movie.id'))
-    name = Column(String(255))
+    name = Column(String(45))
     movie_key = Column(String(45))
 
     # make relation with table movie

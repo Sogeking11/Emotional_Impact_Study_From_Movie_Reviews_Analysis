@@ -11,7 +11,7 @@ class Review(Base):
     date = Column(Date)
     score = Column(Integer)
     url = Column(String(500))
-    source = Column(String(255))
+    source = Column(String(45))
     text = Column(BLOB)
 
     # make relation with table movie on the hand and reviewer on the other hand
