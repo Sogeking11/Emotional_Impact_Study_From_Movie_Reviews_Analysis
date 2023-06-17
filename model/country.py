@@ -1,6 +1,7 @@
 from .sqlalchemyconfig import *
 
 
+
 # Define Country table
 class Country(Base):
     __tablename__ = 'country'
