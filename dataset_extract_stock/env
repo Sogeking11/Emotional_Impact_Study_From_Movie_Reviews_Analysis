@@ -1,0 +1,5 @@
+DB_HOST = Server IP
+DB_PORT = PORT
+DB_USER = USER
+DB_PASSWORD = Password
+DB_NAME = Database name

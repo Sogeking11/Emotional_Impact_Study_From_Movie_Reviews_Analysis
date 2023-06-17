@@ -2,14 +2,14 @@ from sqlalchemy import create_engine, Column, SmallInteger,Integer, Float, Strin
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-import dataset_extract_stock.mySecrets as s
+from dataset_extract_stock import loadEnv
 
 
 # Create the SQLAlchemy engine and session
-engine = create_engine("mysql+mysqlconnector://" + s.DATABASE_USER
-                                                 + ":" + s.DATABASE_PASSWORD
-                                                 + "@" + s.DATABASE_HOST
-                                                 + ":" + s.DATABASE_PORT + "/"
+engine = create_engine("mysql+mysqlconnector://" + loadEnv("DB_USER")
+                                                 + ":" + loadEnv("DB_PASSWORD")
+                                                 + "@" + loadEnv("DB_HOST")
+                                                 + ":" + loadEnv("DB_PORT") + "/"
                                                  + "CINEMOTION"
                                                  )
 Session = sessionmaker(bind=engine)
