@@ -5,7 +5,7 @@ from .sqlalchemyconfig import *
 class Review(Base):
     __tablename__ = 'review'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     movie_id = Column(Integer, ForeignKey('movie.id'))
     reviewer_id = Column(Integer, ForeignKey('reviewer.id'))
     date = Column(Date)
@@ -15,6 +15,6 @@ class Review(Base):
     text = Column(BLOB)
 
     # make relation with table movie on the hand and reviewer on the other hand
-    movie = relationship("Movie", back_populates="reviews")
-    reviewer = relationship("Reviewer", back_populates="reviews")
+    # movie = relationship("Movie", back_populates="reviews")
+    # reviewer = relationship("Reviewer", back_populates="reviews")
    

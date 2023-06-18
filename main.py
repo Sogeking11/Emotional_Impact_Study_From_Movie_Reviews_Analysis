@@ -1,3 +1,6 @@
+from unidecode import unidecode
+from datetime import date
+
 from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant
 from model.sqlalchemyconfig import *
 
@@ -5,56 +8,88 @@ from model.sqlalchemyconfig import *
 
 if __name__ == "__main__":
 
-    pass
     # Create the tables in the database
     Base.metadata.create_all(engine)
 
-    # myBlob1 = b'Il etait encore une fois..'
-    # myBlob2 = b"C'est alors qu'il ne voulurent pas, comme si..."
+    for i in range(10):
 
+        # Create datas
+        # myBlob1 = "Mais je dois vous expliquer comment est née toute cette idée erronée de dénoncer un plaisir et de louer la douleur et je vais vous donner un compte rendu complet du système, "\
+        # "et exposer les enseignements réels du grand explorateur de la vérité, le maître- constructeur du bonheur humain. "\
+        # "Personne ne rejette, n'aime pas ou n'évite le plaisir lui-même, "\
+        # "parce que c'est du plaisir, mais parce que ceux qui ne savent pas rechercher rationnellement le plaisir rencontrent des conséquences extrêmement douloureuses. "\
+        # "Il n'y a plus non plus personne qui aime ou recherche ou désire obtenir la douleur par lui-même, "\
+        # "parce que c'est de la douleur, mais il arrive parfois des circonstances dans lesquelles le travail et la douleur "\
+        # "peuvent lui procurer un grand plaisir. Pour prendre un exemple trivial, "\
+        # "lequel de nous entreprend jamais un exercice physique laborieux, sinon pour en tirer quelque profit ? "\
+        # "Mais qui a le droit de critiquer un homme qui choisit de jouir d'un plaisir qui n'a pas de conséquences fâcheuses, "\
+        # "ou celui qui évite une douleur qui ne produit aucun plaisir résultant ?"
 
-    # movie1 = Movie(
-    #                     title='L\'homme qui tombe à pic',
-    #                      certification='Cert A3',
-    #                     revenue=456546,
-    #                     budget=750000,
-    #                     review_score= 8.5,
-    #                     release_date="1985-08-15",
-    #                     popularity= 9.2,
-    #                     runtime=150,
-    #                     synopsis=myBlob1
-    #                 )
+        #myBlob1 = bytes(unidecode(myBlob1))
+        myBlob = b"Hello"
+        myDate = date(1985, 8, 15)
+        myFloat = 9.2
+        myString = "L\'homme qui tombe à pic"
+        myInteger = 7
+        mySmallint = 2
+
+        # Create Object Entities
+        a_movie = Movie(
+                            title='L\'homme qui tombe à pic',
+                            certification='Cert A3',
+                            revenue=456546,
+                            budget=750000,
+                            review_score= 8.5,
+                            release_date="1985-08-15",
+                            popularity= 9.2,
+                            runtime=150,
+                            synopsis=myBlob
+                        )
+        
+        a_source = Source(name=myString, movie_key=myString)
     
-    # movie2 = Movie(
-    #                     title='L\'Amour du risque',
-    #                     certification='ISO 9002',
-    #                     revenue=563876,
-    #                     budget=75676,
-    #                     review_score= 5.5,
-    #                     release_date="1972-08-15",
-    #                     popularity= 4.2,
-    #                     runtime= 90,
-    #                     synopsis=myBlob2
-    #                 )
-    
+        a_participant = Participant(name=myString, gender=mySmallint)
+        # a_role= role_link_Table(name=myString)
 
-    # # countries
-    # country1 = Country(name="Dzaïr")
-    # country2 = Country(name="Holland")
+        a_prod_company = Prod_Company(name=myString)
+        a_country = Country(name=myString)
+        a_genre = Genre(name=myString)
+        a_keyword = Keyword(name=myString)
 
-    # movie1.countries.append(country1)
-    # movie1.countries.append(country2)
-    # movie2.countries.append(country2)
 
-    # session.add(movie1)
-    # session.add(movie2)
-    # session.add(country1)
-    # session.add(country2)
-    # session.commit()
 
-    #review1 = Review(text=b"Exceptionnelle, maisje sais pas !", movie=movie)
-    #review2 = Review(text=b"Pas terrible, mais impressionnant...", movie=movie)
-    #session.add(movie)
-    #session.add(review1)
-    #session.add(review2)
-    #session.commit()
+        # Create links between Object entities (relationship)
+
+        # # Create a link between movie and reviewers
+        # a_reviewer = Reviewer(url=myString, username=myString)
+
+        # # table d'association entre movie et reviewer
+        # a_review = Review(text=myBlob, 
+        #                   source=myString, 
+        #                   score=myInteger, 
+        #                   date=myDate, 
+        #                   url=myString)
+        
+        # a_review.movie = a_movie
+        # a_review.reviewer = a_reviewer
+
+        #a_review.reviewer(a_reviewer)
+        #a_reviewer.reviews(a_review)
+        a_movie.participants.append(a_participant)
+        a_movie.sources.append(a_source)
+        #a_movie.reviews.append(a_review)
+        a_movie.countries.append(a_country)
+        a_movie.keywords.append(a_keyword)
+        a_movie.genres.append(a_genre)
+        a_movie.prod_companies.append(a_prod_company)
+
+        # add in DB
+        session.add_all([a_movie, 
+                         a_source, 
+                         #a_reviewer,  
+                         a_prod_company, 
+                         a_country, 
+                         a_genre, 
+                         a_keyword])
+                         #a_review])
+        session.commit()
