@@ -2,7 +2,7 @@ from .sqlalchemyconfig import *
 
 # Define Movie table
 class Movie(Base):
-    __tablename__ = 'movie'#
+    __tablename__ = 'movie'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     title = Column(String(100))
@@ -17,8 +17,8 @@ class Movie(Base):
 
     # relationships
     sources = relationship("Source", back_populates="movie")
-    #reviews = relationship("Review", back_populates="movie")# here movie refer to parameter movie on class Review
-    reviewers = relationship("Reviewer", secondary='review', back_populates="movies")
+    reviews = relationship("Review", back_populates="movies")
+    #reviewers = relationship("Reviewer", secondary='review', back_populates="movies")
     countries = relationship("Country", secondary=movie_has_country_link, back_populates="movies")
     keywords = relationship("Keyword", secondary=movie_has_keyword_link, back_populates="movies")
     genres = relationship("Genre", secondary=genre_has_movie_link, back_populates="movies")

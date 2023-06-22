@@ -63,21 +63,15 @@ if __name__ == "__main__":
         # # Create a link between movie and reviewers
         # a_reviewer = Reviewer(url=myString, username=myString)
 
-        # # table d'association entre movie et reviewer
-        # a_review = Review(text=myBlob, 
-        #                   source=myString, 
-        #                   score=myInteger, 
-        #                   date=myDate, 
-        #                   url=myString)
+        ## table d'association entre movie et reviewer
         
-        # a_review.movie = a_movie
-        # a_review.reviewer = a_reviewer
+        a_reviewer = Reviewer(url=myString, username=myString)
 
-        #a_review.reviewer(a_reviewer)
-        #a_reviewer.reviews(a_review)
+        a_review = Review(movies=a_movie, reviewers=a_reviewer,text=myBlob, source=myString, score=myInteger, date=myDate, url=myString)
+        
+
         a_movie.participants.append(a_participant)
         a_movie.sources.append(a_source)
-        #a_movie.reviews.append(a_review)
         a_movie.countries.append(a_country)
         a_movie.keywords.append(a_keyword)
         a_movie.genres.append(a_genre)
@@ -85,11 +79,10 @@ if __name__ == "__main__":
 
         # add in DB
         session.add_all([a_movie, 
-                         a_source, 
-                         #a_reviewer,  
+                         a_source,  
                          a_prod_company, 
                          a_country, 
                          a_genre, 
-                         a_keyword])
-                         #a_review])
+                         a_keyword,
+                         a_review])
         session.commit()

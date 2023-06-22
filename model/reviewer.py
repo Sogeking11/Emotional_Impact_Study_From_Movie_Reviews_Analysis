@@ -9,6 +9,8 @@ class Reviewer(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     url = Column(String(500))
     username = Column(String(45))
-    #reviews = relationship("Review", back_populates="reviewer")
-    movies = relationship("Movie", secondary='review', back_populates="reviewers")
+    reviews = relationship("Review", back_populates="reviewers")
+
+
+
     

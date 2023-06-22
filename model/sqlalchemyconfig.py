@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, SmallInteger,Integer, Float, String, BLOB, Date, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declared_attr
 
 from dataset_extract_stock import loadEnv
 
@@ -10,7 +11,7 @@ engine = create_engine("mysql+mysqlconnector://" + loadEnv("DB_USER")
                                                  + ":" + loadEnv("DB_PASSWORD")
                                                  + "@" + loadEnv("DB_HOST")
                                                  + ":" + loadEnv("DB_PORT") + "/"
-                                                 + "CINEMOTION"
+                                                 + loadEnv("DB_NAME")
                                                  )
 Session = sessionmaker(bind=engine)
 session = Session()
