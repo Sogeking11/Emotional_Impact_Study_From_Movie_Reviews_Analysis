@@ -57,14 +57,6 @@ if __name__ == "__main__":
         a_keyword = Keyword(name=myString)
 
 
-
-        # Create links between Object entities (relationship)
-
-        # # Create a link between movie and reviewers
-        # a_reviewer = Reviewer(url=myString, username=myString)
-
-        ## table d'association entre movie et reviewer
-        
         a_reviewer = Reviewer(url=myString, username=myString)
 
         a_review = Review(movies=a_movie, reviewers=a_reviewer,text=myBlob, source=myString, score=myInteger, date=myDate, url=myString)
