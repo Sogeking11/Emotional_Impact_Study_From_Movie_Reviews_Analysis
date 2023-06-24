@@ -8,4 +8,4 @@ class Participant(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(45))
     gender = Column(SmallInteger)
-    movies = relationship("Movie" , secondary=role_link_Table, back_populates="participants")
+    roles = relationship("Role", back_populates="participants")

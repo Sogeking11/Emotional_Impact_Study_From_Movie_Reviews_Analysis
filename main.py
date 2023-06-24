@@ -1,8 +1,9 @@
 from unidecode import unidecode
 from datetime import date
 
-from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant
+from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant, Role
 from model.sqlalchemyconfig import *
+import csvfile_to_dict as source
 
 
 
@@ -47,22 +48,30 @@ if __name__ == "__main__":
                         )
         
         a_source = Source(name=myString, movie_key=myString)
-    
-        a_participant = Participant(name=myString, gender=mySmallint)
-        # a_role= role_link_Table(name=myString)
-
         a_prod_company = Prod_Company(name=myString)
         a_country = Country(name=myString)
         a_genre = Genre(name=myString)
         a_keyword = Keyword(name=myString)
 
+        # participant case
+        a_paticipant = Participant(name=myString, gender=2)
+        a_role = Role(
+                        movies=a_movie,
+                        participants=a_paticipant,
+                        name=myString
+                      )
 
+        # review case
         a_reviewer = Reviewer(url=myString, username=myString)
-
-        a_review = Review(movies=a_movie, reviewers=a_reviewer,text=myBlob, source=myString, score=myInteger, date=myDate, url=myString)
+        a_review = Review(movies=a_movie,
+                          reviewers=a_reviewer,
+                          text=myBlob,
+                          source=myString,
+                          score=myInteger,
+                          date=myDate,
+                          url=myString
+                          )
         
-
-        a_movie.participants.append(a_participant)
         a_movie.sources.append(a_source)
         a_movie.countries.append(a_country)
         a_movie.keywords.append(a_keyword)
@@ -76,5 +85,7 @@ if __name__ == "__main__":
                          a_country, 
                          a_genre, 
                          a_keyword,
-                         a_review])
+                         a_review,
+                         a_role])
+        
         session.commit()

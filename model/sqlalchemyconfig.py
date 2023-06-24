@@ -49,11 +49,3 @@ prod_company_has_movie_link = Table('prod_company_has_movie', Base.metadata,
     Column('movie_id', Integer, ForeignKey('movie.id')),
     Column('prod_company_id', Integer, ForeignKey('prod_company.id'))
 )
-
-# Define Rôle table
-role_link_Table = Table('role', Base.metadata,
-    Column('id', Integer, primary_key=True),
-    Column('movie_id', Integer, ForeignKey('movie.id')),
-    Column('participant_id', Integer, ForeignKey('participant.id')),
-    Column('name', String(45))
-)
