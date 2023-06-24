@@ -5,6 +5,6 @@ from .sqlalchemyconfig import *
 class Genre(Base):
     __tablename__ = 'genre'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String(45))
     movies = relationship("Movie" , secondary=genre_has_movie_link, back_populates="genres")

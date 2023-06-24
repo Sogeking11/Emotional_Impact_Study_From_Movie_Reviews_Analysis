@@ -13,7 +13,7 @@ class Movie(Base):
     release_date = Column(Date)
     popularity = Column(Float)
     runtime = Column(Integer)
-    synopsis = Column(BLOB)
+    synopsis = Column(String(1000))
 
     # relationships
     sources = relationship("Source", back_populates="movie")

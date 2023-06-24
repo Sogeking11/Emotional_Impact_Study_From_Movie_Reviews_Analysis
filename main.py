@@ -1,5 +1,5 @@
-from unidecode import unidecode
 from datetime import date
+import pandas as pd
 
 from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant, Role
 from model.sqlalchemyconfig import *
@@ -12,80 +12,84 @@ if __name__ == "__main__":
     # Create the tables in the database
     Base.metadata.create_all(engine)
 
-    for i in range(10):
+    # get dictionnary source
+    source_dict = source.csvToDictFile('testapi100.csv')
 
-        # Create datas
-        # myBlob1 = "Mais je dois vous expliquer comment est née toute cette idée erronée de dénoncer un plaisir et de louer la douleur et je vais vous donner un compte rendu complet du système, "\
-        # "et exposer les enseignements réels du grand explorateur de la vérité, le maître- constructeur du bonheur humain. "\
-        # "Personne ne rejette, n'aime pas ou n'évite le plaisir lui-même, "\
-        # "parce que c'est du plaisir, mais parce que ceux qui ne savent pas rechercher rationnellement le plaisir rencontrent des conséquences extrêmement douloureuses. "\
-        # "Il n'y a plus non plus personne qui aime ou recherche ou désire obtenir la douleur par lui-même, "\
-        # "parce que c'est de la douleur, mais il arrive parfois des circonstances dans lesquelles le travail et la douleur "\
-        # "peuvent lui procurer un grand plaisir. Pour prendre un exemple trivial, "\
-        # "lequel de nous entreprend jamais un exercice physique laborieux, sinon pour en tirer quelque profit ? "\
-        # "Mais qui a le droit de critiquer un homme qui choisit de jouir d'un plaisir qui n'a pas de conséquences fâcheuses, "\
-        # "ou celui qui évite une douleur qui ne produit aucun plaisir résultant ?"
+    # here we test for one movie to ckeck
+    row = source_dict[19]
 
-        #myBlob1 = bytes(unidecode(myBlob1))
-        myBlob = b"Hello"
-        myDate = date(1985, 8, 15)
-        myFloat = 9.2
-        myString = "L\'homme qui tombe à pic"
-        myInteger = 7
-        mySmallint = 2
+    # insert source
+    #for row in source_dict.values():
 
-        # Create Object Entities
-        a_movie = Movie(
-                            title='L\'homme qui tombe à pic',
-                            certification='Cert A3',
-                            revenue=456546,
-                            budget=750000,
-                            review_score= 8.5,
-                            release_date="1985-08-15",
-                            popularity= 9.2,
-                            runtime=150,
-                            synopsis=myBlob
-                        )
-        
-        a_source = Source(name=myString, movie_key=myString)
-        a_prod_company = Prod_Company(name=myString)
-        a_country = Country(name=myString)
-        a_genre = Genre(name=myString)
-        a_keyword = Keyword(name=myString)
+    # movie part
+    title = str(row['movie'].get('title'))
+    certification = str(row['movie'].get('certification'))
+    revenue = int(row['movie'].get('revenue'))
+    budget = int(row['movie'].get('budget'))
+    review_score = float(row['movie'].get('review_score'))
+    release_date = row['movie'].get('release_date')
+    popularity = float(row['movie'].get('popularity'))
+    runtime = int(row['movie'].get('runtime'))
+    synopsis = str(row['movie'].get('synopsis'))
+    # create movie object from model
+    movie = Movie(title=title,
+                  certification=certification,
+                  revenue=revenue,
+                  budget=budget,
+                  review_score=review_score,
+                  release_date=release_date,
+                  popularity=popularity,
+                  runtime=runtime,
+                  synopsis=synopsis
+    )   
+    # source part
+    imdb_src = str(row['sources'].get('imdb'))
+    tmdb_src = str(row['sources'].get('tmdb'))
+    # create source object from model
+    source1 = Source(name = 'imdb', movie_key=imdb_src)
+    source2 = Source(name = 'tmdb', movie_key=tmdb_src)
+    movie.sources.append(source1)
+    movie.sources.append(source2)
+    session.add(source1, source2)   
+    # country part
+    country_list = row['countries']
+    for country in country_list:
+        # create country object from model
+        country_obj = Country(name=country)
+        movie.countries.append(country_obj)
+        session.add(country_obj)    
+    # prod_company part
+    prod_company_list = row['production_companies']
+    for prod_company in prod_company_list:
+        # create prod_company object from model
+        prod_company_obj = Prod_Company(name=prod_company)
+        movie.prod_companies.append(prod_company_obj)
+        session.add(prod_company_obj)   
+    # genre part
+    genre_list = row['genres']
+    for genre in genre_list:
+        # create genre object from model
+        genre_obj = Genre(name=genre)
+        movie.genres.append(genre_obj)
+        session.add(genre_obj)  
+    # keyword part
+    keyword_list = row['keywords']
+    for keyword in keyword_list:
+        # create keyword object from model
+        keyword_obj = Keyword(name=keyword)
+        movie.keywords.append(keyword_obj)
+        session.add(keyword_obj)    
+    # role part
+    for a, row in row['role'].items():
+        participant = Participant(name=str(row['name']), gender=int(row['gender']))
+        role = Role(
+                    movies=movie,
+                    participants=participant,
+                    name=str(row['role'])
+                  )
+        session.add(role)   
 
-        # participant case
-        a_paticipant = Participant(name=myString, gender=2)
-        a_role = Role(
-                        movies=a_movie,
-                        participants=a_paticipant,
-                        name=myString
-                      )
 
-        # review case
-        a_reviewer = Reviewer(url=myString, username=myString)
-        a_review = Review(movies=a_movie,
-                          reviewers=a_reviewer,
-                          text=myBlob,
-                          source=myString,
-                          score=myInteger,
-                          date=myDate,
-                          url=myString
-                          )
-        
-        a_movie.sources.append(a_source)
-        a_movie.countries.append(a_country)
-        a_movie.keywords.append(a_keyword)
-        a_movie.genres.append(a_genre)
-        a_movie.prod_companies.append(a_prod_company)
-
-        # add in DB
-        session.add_all([a_movie, 
-                         a_source,  
-                         a_prod_company, 
-                         a_country, 
-                         a_genre, 
-                         a_keyword,
-                         a_review,
-                         a_role])
-        
-        session.commit()
+    # insert datas  
+    session.add(movie)
+    session.commit()

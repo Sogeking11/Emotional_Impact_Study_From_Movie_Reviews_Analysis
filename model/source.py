@@ -5,7 +5,7 @@ from .sqlalchemyconfig import *
 class Source(Base):
     __tablename__ = 'source'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     movie_id = Column(Integer, ForeignKey('movie.id'))
     name = Column(String(45))
     movie_key = Column(String(45))

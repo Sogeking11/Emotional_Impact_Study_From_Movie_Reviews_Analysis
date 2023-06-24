@@ -28,8 +28,7 @@ Base = declarative_base()
 # here between movie and country tables
 movie_has_country_link = Table('movie_has_country', Base.metadata,
     Column('movie_id', Integer, ForeignKey('movie.id')),
-    Column('country_id', Integer, ForeignKey('country.id')),
-    Column('name', String(45))
+    Column('country_id', Integer, ForeignKey('country.id'))
 )
 
 # here between movie and keyword tables
