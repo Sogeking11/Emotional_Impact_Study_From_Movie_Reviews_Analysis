@@ -81,12 +81,12 @@ def csvToDictFile(csv_file: str):
 
       # participant roles case
       role = {}
-      for row in range(0, len(df_role)):
+      for row in df_role:
         role[row] = {
-                        "name":df_role['name'][row],
-                        "gender":df_role['gender'][row],
-                        "popularity":df_role['popularity'][row],
-                        "role":df_role['role'][row]
+                        "name":df_role['name'],
+                        "gender":df_role['gender'],
+                        "popularity":df_role['popularity'],
+                        "role":df_role['role']
                       }
         
       #put all inside myDict
@@ -103,7 +103,7 @@ def csvToDictFile(csv_file: str):
       
     except Exception:
       lineerror += i
-      logging.exception(f"Syntax error on line {lineerror} from csv file")
+      logging.exception(f"error on line {lineerror} from csv file")
       continue
   
   # convert to json string
@@ -113,6 +113,4 @@ def csvToDictFile(csv_file: str):
 
 
 if __name__ == "__main__":
-
-  myDict = csvToDictFile("testapi100.csv")
-  print(myDict)
+  pass

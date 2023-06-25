@@ -16,11 +16,11 @@ if __name__ == "__main__":
     source_dict = source.csvToDictFile('testapi100.csv')
 
     # here we test for one movie to ckeck
-    row = source_dict[19]
+    row = source_dict[0]
 
     # insert source
     #for row in source_dict.values():
-
+    print(row['movie']['title'] + "\n")
     # movie part
     title = str(row['movie'].get('title'))
     certification = str(row['movie'].get('certification'))
@@ -33,14 +33,14 @@ if __name__ == "__main__":
     synopsis = str(row['movie'].get('synopsis'))
     # create movie object from model
     movie = Movie(title=title,
-                  certification=certification,
-                  revenue=revenue,
-                  budget=budget,
-                  review_score=review_score,
-                  release_date=release_date,
-                  popularity=popularity,
-                  runtime=runtime,
-                  synopsis=synopsis
+                certification=certification,
+                revenue=revenue,
+                budget=budget,
+                review_score=review_score,
+                release_date=release_date,
+                popularity=popularity,
+                runtime=runtime,
+                synopsis=synopsis
     )   
     # source part
     imdb_src = str(row['sources'].get('imdb'))
@@ -80,16 +80,14 @@ if __name__ == "__main__":
         movie.keywords.append(keyword_obj)
         session.add(keyword_obj)    
     # role part
-    for a, row in row['role'].items():
-        participant = Participant(name=str(row['name']), gender=int(row['gender']))
+    for member in row['role'].values():
+        participant = Participant(name=str(member['name']), gender=int(member['gender'][0]))
         role = Role(
                     movies=movie,
                     participants=participant,
-                    name=str(row['role'])
-                  )
+                    name=str(member['role'])
+                )
         session.add(role)   
-
-
     # insert datas  
     session.add(movie)
     session.commit()
