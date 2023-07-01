@@ -1,24 +1,36 @@
 from datetime import date
-import pandas as pd
-import json
 import logging
+
 
 from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant, Role
 from model.sqlalchemyconfig import *
 
-## Define logging
-logging.basicConfig(level=logging.INFO,
-                    filename="log.log",
-                    filemode="w",
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 def data_exist(object):
+    """Check if a data is not None
+
+    Args:
+        object (json): data to check
+
+    Returns:
+        bool: True if data is not None, False otherwise
+    """
+    
     if object is None:
         return False
     else:
         return True
 
 def movie_instance(json_object):
+    """Create a Movie object from a json object
+
+    Args:
+        json_object (json): comming from json file containing movies list
+
+    Returns:
+        Movie object from sqlamlchemy mapping: image of the Movie table on DB
+    """
     # parameters initialization
     title = 'None'
     certification = 'None'
@@ -49,7 +61,6 @@ def movie_instance(json_object):
         if data_exist(json_object['synopsis']):
             synopsis = json_object['synopsis']
     else:
-        logging.info("Movie object is empty")
         return None
 
     # Table movie
@@ -68,15 +79,54 @@ def movie_instance(json_object):
 
 
 def source_instance(json_object, src: str):
-    # Test if the object is empty
+    """Create a Source object from a json object
+
+    Args:
+        json_object (json): comming from json file containing movies list
+        src (str): source name
+
+    Returns:
+        Source object from sqlamlchemy mapping: image of the Source table on DB
+    """
+
+    # parameters initialization
+    movie_key = 'None'
+    # assign parameters if possible
     if data_exist(json_object['id_'+ src]):
         movie_key = json_object['id_'+ src]
         source_obj = Source(name=src, movie_key=movie_key)
+        # test if the movie_key is already in the database
+        if session.query(Source).filter_by(movie_key=movie_key).first() is not None:
+            source_obj = session.query(Source).filter_by(movie_key=movie_key).first()
         return source_obj
     else:
         return None
+
+    
     
 def which_Entity(content: str, data:str):
+    """Because several table got the same strucutred
+    this function will help makeORM_instance function
+    to determine wich table as to be treated
+
+    Args:
+        content (str): content of the the table concerned
+                        exemple "countries" for country table
+        data (str):  the country
+
+    Returns:
+        object: object from sqlamlchemy mapping
+    """
+
+    # Test if the object is empty
+    if data_exist(data):
+        data = data
+    else:
+        logging.info("Object is empty")
+        return None
+    
+    # Create object from sqlamlchemy mapping
+    
     if content == 'countries':
         return Country(name=data)
     elif content == 'genres':
@@ -88,8 +138,20 @@ def which_Entity(content: str, data:str):
     
     return None
 
-# care of Country, Genre, Keyword, Prod_Company entities
 def makeORM_instance(json_object, tableContent: str):
+    """Create a list of ORM object from a json object
+    that function is designed to care of Country, Genre, 
+    Keyword, Prod_Company entities.
+
+    Args:
+        json_object (json): comming from json file containing movies list
+        tableContent (str): content of the the table concerned
+                        exemple "countries" for country table
+
+    Returns:
+        list: list of object from sqlamlchemy mapping
+    
+    """
     # Test if the object is empty
     if data_exist(json_object[tableContent]):
         tableContent_list = json_object[tableContent]
@@ -102,9 +164,18 @@ def makeORM_instance(json_object, tableContent: str):
     else:
         return None
     
-def role_instance(json_object):
-    # Test if the object is empty
+def role_instance(json_object): 
+    """Create a list of Role object from a json object
+
+    Args:
+        json_object (json): comming from json file containing movies list
+
+    Returns:
+        list: list of object from sqlamlchemy mapping
+    """
     role_list = []
+
+    # Test if the object is empty
     if data_exist(json_object['role']):
         for role in json_object['role']:
             # init parameters before to assign them
@@ -115,89 +186,19 @@ def role_instance(json_object):
             # assign parameters
             if data_exist(role['role']):
                 that_role = role['role']
-            if data_exist(role['name']):
-                name = role['name']
             if data_exist(role['gender']):
                 gender = role['gender']
             if data_exist(role['popularity']):
                 popularity = role['popularity']
+            if data_exist(role['name']):
+                name = role['name']
             # create object datas to send them as return function
             participant_obj = Participant(name=name, gender=gender, popularity=popularity)
+            if session.query(Participant).filter_by(name=name).first() is not None:
+                participant_obj = session.query(Participant).filter_by(name=name).first()
             dataRole = {'role': that_role, 'participant': participant_obj}
             role_list.append(dataRole)
         return role_list      
 
     else:
         return None
-
-
-if __name__ == '__main__':
-
-     # Create the tables in the database
-    Base.metadata.create_all(engine)
-
-    #Opening JSON file
-    with open('datas/test.json', 'r', encoding='utf-8') as openfile:
-
-        # Reading from json file
-        try:
-            json_object = json.load(openfile,)
-        except ValueError as e:
-            print('invalid json: %s' % e)
-
-    # try with one film to start
-    OneFilm = json_object[0]
-
-    # Table movie
-    if movie_instance(OneFilm) is not None:
-        myFilm = movie_instance(OneFilm)
-
-    # Table source
-    if source_instance(OneFilm, 'imdb') is not None:
-        mySource1 = source_instance(OneFilm, 'imdb')
-        myFilm.sources.append(mySource1)
-        session.add(mySource1)
-
-    if source_instance(OneFilm,'tmdb') is not None:
-        mySource2 = source_instance(OneFilm,'tmdb')
-        myFilm.sources.append(mySource2)
-        session.add(mySource2)
-
-    # Table country
-    if makeORM_instance(OneFilm, 'countries') is not None:
-        countries_list = makeORM_instance(OneFilm, 'countries')
-        for country in countries_list:
-            myFilm.countries.append(country)
-            session.add(country)
-
-    # Table prod_company
-    if makeORM_instance(OneFilm, 'production_companies') is not None:
-        prod_companies_list = makeORM_instance(OneFilm, 'production_companies')
-        for prod_company in prod_companies_list:
-            myFilm.prod_companies.append(prod_company)
-            session.add(prod_company)
-
-    # Table keyword
-    if makeORM_instance(OneFilm, 'keywords') is not None:
-        keywords_list = makeORM_instance(OneFilm, 'keywords')
-        for keyword in keywords_list:
-            myFilm.keywords.append(keyword)
-            session.add(keyword)
-
-    # Table genre
-    if makeORM_instance(OneFilm, 'genres') is not None:
-        genres_list = makeORM_instance(OneFilm, 'genres')
-        for genre in genres_list:
-            myFilm.genres.append(genre)
-            session.add(genre)
-    
-    # Tables participant and role
-    if role_instance(OneFilm) is not None:
-        for role in role_instance(OneFilm):
-            myRole = Role(movies=myFilm, name=role['role'], participants=role['participant'])
-            session.add(myRole)
-
-    # Add to database
-    session.add(myFilm)
-    session.commit()
-    
