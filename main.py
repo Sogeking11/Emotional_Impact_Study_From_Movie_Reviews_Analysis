@@ -3,7 +3,7 @@ import json
 
 from model import Movie, Country, Genre, Keyword, Prod_Company, Role
 from model.sqlalchemyconfig import *
-from parseJsonFile import *
+from datas_object import *
 
 
 
@@ -21,12 +21,13 @@ if __name__ == '__main__':
         try:
             json_object = json.load(openfile,)
         except ValueError as e:
-            print('invalid json: %s' % e)
+            logging.error('invalid json: %s' % e)
 
     # try with one film to start
     #OneFilm = json_object[0]
     i = 0
     for OneFilm in json_object:
+        # needed for stdout info saying how many movies has been treated
         i+=1
 
         # Table movie
@@ -34,10 +35,12 @@ if __name__ == '__main__':
             myFilm = movie_instance(OneFilm)
             if session.query(Movie).filter_by(title=myFilm.title).first() is not None:
                 myFilm = session.query(Movie).filter_by(title=myFilm.title).first()
+        
         # push info in stdout
         sys.stdout.write('Film ' + str(i) + ': ' + myFilm.title + ' : Traitement\r')
         sys.stdout.flush()
-        # Table source
+
+        # Table source, just 2 sources possible
         if source_instance(OneFilm, 'imdb') is not None:
             mySource1 = source_instance(OneFilm, 'imdb')
             myFilm.sources.append(mySource1)
