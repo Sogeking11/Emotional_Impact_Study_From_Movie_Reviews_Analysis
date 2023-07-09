@@ -1,7 +1,7 @@
 import logging
 from model.sqlalchemyconfig import *
 from load_from_JsonFiles import load_movies, load_reviews
-from restruct_redaJsonFile import restruct_redaJsonFile
+from restruct_reviewsJsonFile import restruct_redaJsonFile
 
 
 # configure logging
