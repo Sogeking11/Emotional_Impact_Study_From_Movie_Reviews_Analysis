@@ -174,15 +174,3 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
-
-
-model/__pycache__/country.cpython-39.pyc
-model/__pycache__/country.cpython-39.pyc
-model/__pycache__/genre.cpython-39.pyc
-model/__pycache__/keyword.cpython-39.pyc
-model/__pycache__/movie.cpython-39.pyc
-model/__pycache__/participant.cpython-39.pyc
-model/__pycache__/prod_company.cpython-39.pyc
-model/__pycache__/review.cpython-39.pyc
-model/__pycache__/reviewer.cpython-39.pyc
-model/__pycache__/source.cpython-39.pyc
