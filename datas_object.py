@@ -2,7 +2,7 @@ from datetime import date
 import logging
 
 
-from model import Movie, Review, Country, Reviewer, Genre, Keyword, Prod_Company, Source, Participant, Role
+from model import Movie, Country, Genre, Keyword, Prod_Company, Source, Participant
 from model.sqlalchemyconfig import *
 
 

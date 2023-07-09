@@ -9,4 +9,6 @@ class Participant(Base):
     name = Column(String(45))
     gender = Column(SmallInteger)
     popularity = Column(Float)
+
+    # Back reference to Role table
     roles = relationship("Role", back_populates="participants")
