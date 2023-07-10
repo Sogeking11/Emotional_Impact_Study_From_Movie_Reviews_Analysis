@@ -2,16 +2,16 @@ import sys
 import pandas as p
 import pymysql as maria
 from pymysql.connections import Connection
+from loadEnv import loadEnv
 
-from dataset_extract_stock import mySecrets
 
 
 credentials = {
-    "db_host": mySecrets.secrets["DATABASE_HOST"],
-    "db_port": mySecrets.secrets["DATABASE_PORT"],
-    "db_user": mySecrets.secrets["DATABASE_USER"],
-    "db_password": mySecrets.secrets["DATABASE_PASSWORD"],
-    "db_database": mySecrets.secrets["DATABASE_NAME"]
+    "db_host": loadEnv("DB_HOST"),
+    "db_port": loadEnv("DB_PORT,"),
+    "db_user": loadEnv("DB_USER"),
+    "db_password": loadEnv("DB_PASSWORD"),
+    "db_database": loadEnv("DB_NAME")
 }
 
 def connect_to_db() -> maria.connections.Connection:

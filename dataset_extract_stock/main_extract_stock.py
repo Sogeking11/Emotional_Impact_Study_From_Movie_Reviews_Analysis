@@ -46,7 +46,7 @@ def create_feed_csvFiles(filename):
 
 
 if __name__ == "__main__":
-    
+  
     # directories
     org = "../aclImdb/"
     testPath = org + "test/"
@@ -80,8 +80,3 @@ if __name__ == "__main__":
 
     # push reviews in DB according to csv files generated
     feedReviewTable(source_dict)
-
-
-
-
-    
