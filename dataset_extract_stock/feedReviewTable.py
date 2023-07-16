@@ -3,14 +3,17 @@ import sys
 import re
 import pandas
 
-from db_stock import connect_to_db
-
+# don't know why when I use it(the import just under that comment) to get get_numbered_files function
+# to generate csv reviews in csvDataset-to-Json module
+# it's not working
+# must be module declaration on __init__ ??
+#from db_stock import connect_to_db
 
 
 def get_numbered_files(directory):
     """
     Generate a dictionnary that got keys corresponding to the position of the review
-    and as value a list wherewe can found the filename and the review's score.
+    and as value a list where we can found the filename and the review's score.
 
     Args:
         directory (str): Directory path where we got review files

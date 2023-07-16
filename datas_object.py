@@ -6,6 +6,20 @@ from model import Movie, Country, Genre, Keyword, Prod_Company, Source, Particip
 from model.sqlalchemyconfig import *
 
 
+# logging basic config
+logging.basicConfig(level=logging.INFO,filename="logs/log.log", filemode="w",
+                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s') 
+
+
+# logger config
+logger = logging.getLogger(__name__)
+handler = logging.FileHandler("logs/" + __name__ + ".log")
+#handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
 
 def data_exist(object):
     """Check if a data is not None
@@ -37,31 +51,64 @@ def movie_instance(json_object):
     revenue = 0
     budget = 0
     review_score = 0.0
-    release_date = date(2001, 1, 1)
+    release_date = date(2050, 12, 13)
     popularity = 0.0
     runtime = 0
     synopsis = 'None'
     # assign parameters if possible
-    if data_exist(json_object['title']):
-        title = json_object['title']
+    try:
+        if data_exist(json_object['title']):
+            title = json_object['title']
+    except KeyError as e:
+        logger.warning("Cant assign title parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['certification']):
             certification = json_object['certification']
+    except KeyError as e:
+        logger.warning("Cant assign certification parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['revenue']):
-            revenue = json_object['revenue']
+            revenue = json_object['revenue']         
+    except KeyError as e:
+        logger.warning("Cant assign revenue parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['budget']):
-            budget = json_object['budget']
+            budget = json_object['budget']        
+    except KeyError as e:
+        logger.warning("Cant assign budget parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['review_score']):
             review_score = json_object['review_score']
+    except KeyError as e:
+        logger.warning("Cant assign review_score parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['release_date']):
             release_date = json_object['release_date']
+    except KeyError as e:
+        logger.warning("Cant assign release_date parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['popularity']):
             popularity = json_object['popularity']
+    except KeyError as e:
+        logger.warning("Cant assign popularity parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['runtime']):
             runtime = json_object['runtime']
+    except KeyError as e:
+        logger.warning("Cant assign runtime parameters to movie object: %s", e)
+
+    try:
         if data_exist(json_object['synopsis']):
             synopsis = json_object['synopsis']
-    else:
-        return None
+    except KeyError as e:
+        logger.warning("Cant assign synopsis parameters to movie object: %s", e)
 
     # Table movie
     movie_obj = Movie(title=title,

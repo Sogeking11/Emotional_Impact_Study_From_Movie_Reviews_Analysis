@@ -1,4 +1,3 @@
-import inspect
 import sys
 import json
 import logging
@@ -6,11 +5,15 @@ import logging
 from model import Movie, Country, Genre, Keyword, Prod_Company, Role, Review, Reviewer
 from datas_object import *
 
+# logging basic config
+logging.basicConfig(level=logging.INFO,filename="logs/log.log", filemode="w",
+                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s') 
+
 
 # logger config
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(__name__ + ".log")
-handler.setLevel(logging.DEBUG)
+handler = logging.FileHandler("logs/" + __name__ + ".log")
+handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -25,6 +28,10 @@ def load_movies(jsonMovieFile: str):
     """
 
     #Opening JSON file
+
+    # test logger
+    logger.info('test logger')
+
     with open(jsonMovieFile, 'r', encoding='utf-8') as openfile:
 
         # Reading from json file
@@ -41,82 +48,119 @@ def load_movies(jsonMovieFile: str):
         i+=1
 
         # Table movie
-        if movie_instance(OneFilm) is not None:
-            myFilm = movie_instance(OneFilm)
-            if session.query(Movie).filter_by(title=myFilm.title).first() is not None:
-                myFilm = session.query(Movie).filter_by(title=myFilm.title).first()
+        myFilm = movie_instance(OneFilm)
+
+        # check if movie exist on db passing by source table
+        try:
+            mySource = session.query(Source).filter_by(movie_key=OneFilm['id_imdb']).first()
+        except:
+            logger.warning('No source for this film', OneFilm['id_imdb'])
+            continue
+
+        if mySource is not None:
+            # get movie object to use it
+            myFilm = session.query(Movie).filter_by(id=mySource.movie_id).first()
+
+
         
         # push info in stdout
-        sys.stdout.write('Film ' + str(i) + ': ' + myFilm.title + ' : Traitement\r')
+        sys.stdout.write('Film ' + str(i) + '\\' + str(len(json_object)) + ': ' + str(OneFilm['title']) + ' : Traitement\r')
         sys.stdout.flush()
 
         # Table source, just 2 sources possible
-        if source_instance(OneFilm, 'imdb') is not None:
-            mySource1 = source_instance(OneFilm, 'imdb')
-            myFilm.sources.append(mySource1)
-            session.add(mySource1)
+        try:
+            if source_instance(OneFilm, 'imdb') is not None:
+                mySource1 = source_instance(OneFilm, 'imdb')
+                myFilm.sources.append(mySource1)
+                session.add(mySource1)
+        except:
+            logging.warning('No imdb source for this film')
 
-        if source_instance(OneFilm,'tmdb') is not None:
-            mySource2 = source_instance(OneFilm,'tmdb')
-            myFilm.sources.append(mySource2)
-            session.add(mySource2)
+
+        try:
+            if source_instance(OneFilm,'tmdb') is not None:
+                mySource2 = source_instance(OneFilm,'tmdb')
+                myFilm.sources.append(mySource2)
+                session.add(mySource2)
+        except:
+            logging.warning('No tmdb source for this film')
 
         # Table country
-        if makeORM_instance(OneFilm, 'countries') is not None:
-            countries_list = makeORM_instance(OneFilm, 'countries')
-            for country in countries_list:
-                # test to check if the country is already in the database
-                if session.query(Country).filter_by(name=country.name).first() is not None: 
-                    # get that country object
-                    country = session.query(Country).filter_by(name=country.name).first()
+        try:
+            if makeORM_instance(OneFilm, 'countries') is not None:
+                countries_list = makeORM_instance(OneFilm, 'countries')
+                for country in countries_list:
+                    # test to check if the country is already in the database
+                    if session.query(Country).filter_by(name=country.name).first() is not None: 
+                        # get that country object
+                        country = session.query(Country).filter_by(name=country.name).first()
 
-                # add to the list of countries    
-                myFilm.countries.append(country)
+                    # add to the list of countries    
+                    myFilm.countries.append(country)
 
-                session.add(country)
+                    session.add(country)
+        except:
+            logging.warning('No countries for this film')
+
 
         # Table prod_company
-        if makeORM_instance(OneFilm, 'production_companies') is not None:
-            prod_companies_list = makeORM_instance(OneFilm, 'production_companies')
-            for prod_company in prod_companies_list:
-                # test to check if the production company is already in the database
-                if session.query(Prod_Company).filter_by(name=prod_company.name).first() is not None: 
-                    # get that production company object
-                    prod_company = session.query(Prod_Company).filter_by(name=prod_company.name).first()
-                myFilm.prod_companies.append(prod_company)
-                session.add(prod_company)
+        try:
+            if makeORM_instance(OneFilm, 'production_companies') is not None:
+                prod_companies_list = makeORM_instance(OneFilm, 'production_companies')
+                for prod_company in prod_companies_list:
+                    # test to check if the production company is already in the database
+                    if session.query(Prod_Company).filter_by(name=prod_company.name).first() is not None: 
+                        # get that production company object
+                        prod_company = session.query(Prod_Company).filter_by(name=prod_company.name).first()
+                    myFilm.prod_companies.append(prod_company)
+                    session.add(prod_company)
+        except:
+            logging.warning('No production companies for this film')
 
         # Table keyword
-        if makeORM_instance(OneFilm, 'keywords') is not None:
-            keywords_list = makeORM_instance(OneFilm, 'keywords')
-            for keyword in keywords_list:
-                # test to check if the keyword is already in the database
-                if session.query(Keyword).filter_by(name=keyword.name).first() is not None: 
-                    # get that keyword object
-                    keyword = session.query(Keyword).filter_by(name=keyword.name).first()
-                myFilm.keywords.append(keyword)
-                session.add(keyword)
+        try:
+            if makeORM_instance(OneFilm, 'keywords') is not None:
+                keywords_list = makeORM_instance(OneFilm, 'keywords')
+                for keyword in keywords_list:
+                    # test to check if the keyword is already in the database
+                    if session.query(Keyword).filter_by(name=keyword.name).first() is not None: 
+                        # get that keyword object
+                        keyword = session.query(Keyword).filter_by(name=keyword.name).first()
+                    myFilm.keywords.append(keyword)
+                    session.add(keyword)
+        except:
+            logging.warning('No keywords for this film')
 
         # Table genre
-        if makeORM_instance(OneFilm, 'genres') is not None:
-            genres_list = makeORM_instance(OneFilm, 'genres')
-            for genre in genres_list:
-                # test to check if the genre is already in the database
-                if session.query(Genre).filter_by(name=genre.name).first() is not None: 
-                    # get that genre object
-                    genre = session.query(Genre).filter_by(name=genre.name).first()
-                myFilm.genres.append(genre)
-                session.add(genre)
+        try:
+            if makeORM_instance(OneFilm, 'genres') is not None:
+                genres_list = makeORM_instance(OneFilm, 'genres')
+                for genre in genres_list:
+                    # test to check if the genre is already in the database
+                    if session.query(Genre).filter_by(name=genre.name).first() is not None: 
+                        # get that genre object
+                        genre = session.query(Genre).filter_by(name=genre.name).first()
+                    myFilm.genres.append(genre)
+                    session.add(genre)
+        except:
+            logging.warning('No genres for this film')
         
         # Tables participant and role
-        if role_instance(OneFilm) is not None:
-            for role in role_instance(OneFilm):
-                myRole = Role(movies=myFilm, name=role['role'], participants=role['participant'])
-                session.add(myRole)
+        try:
+            if role_instance(OneFilm) is not None:
+                for role in role_instance(OneFilm):
+                    myRole = Role(movies=myFilm, name=role['role'], participants=role['participant'])
+                    session.add(myRole)
+        except:
+            logging.warning('No participants for this film')
 
         # Add to database
-        session.add(myFilm)
-        session.commit()
+        try:
+            session.add(myFilm)
+            session.commit()
+        except:
+            logger.exception('invalid movie', OneFilm['id_imdb'])
+            logger.info('invalid movie', OneFilm['id_imdb'])
 
         # clean stdout
         sys.stdout.write('              '*10 + '\r')
@@ -156,7 +200,7 @@ def load_reviews(file_name):
             sys.stdout.write('Review number : ' + str(cmpt) + ' from movie source : ' + movie_key + ' in operation.\r')
             sys.stdout.flush()
 
-            # check if movie exist in the database
+            # check if movie exist in the database if not do nothing
             if session.query(Source).filter_by(movie_key=movie_key).first() is not None:
                 mySource = session.query(Source).filter_by(movie_key=movie_key).first()
 
@@ -166,38 +210,67 @@ def load_reviews(file_name):
                 except Exception as e:
                     logger.exception('invalid movie')
 
-                # check if the review exist by using its url
-                if session.query(Review).filter_by(url=aReview['url']).first() is None:
-                    # check if the reviewer exist by using its username
-                    if session.query(Reviewer).filter_by(username=aReview['username']).first() is None:
-                        # create a new reviewer
+                # check if the review exist in db by using its url
+                try:
+                    if session.query(Review).filter_by(url=aReview['url']).first() is None:
+
+                        # Here to prepare reviewer and review datas objects
                         try:
                             myReviewer = Reviewer(username=aReview['username'], url=aReview['user_url'])
                         except Exception as e:
-                            logger.error('could not create new reviewer')
-                    else:
-                        # get the reviewer id
-                        try:
-                            myReviewer = session.query(Reviewer).filter_by(username=aReview['username']).first()
-                        except Exception as e:
-                            logger.exception('could not get the Reviewer object')
+                            logger.exception('could not create new reviewer')
 
-                    # create a new review
-                    myReview = Review(
-                                        url=aReview['url'],
-                                        text=aReview['text'],
-                                        score=aReview['score'],
-                                        source=aReview['source'],
-                                        date=aReview['date'],
-                                        reviewers=myReviewer,
-                                        movies=myMovie
-                                    )
-                    
-                    # add the review to the database
+                    else:
+
+                        # Review url already exist, but need to know if its from dataset
+                        if aReview['url'] == "From_DataSet":
+
+                            # need to check if the reviewer is fake (cf: dataset)
+                            if session.query(Reviewer).filter_by(url="From_DataSet").first() is not None:
+
+                                # Here to prepare reviewer from dataset reviewer and review datas objects
+                                try:
+                                    myReviewer = session.query(Reviewer).filter_by(url="From_DataSet").first()
+                                except Exception as e:
+                                    logger.error('could not get Dataset Reviewer object')
+                                
+                                # preparing review datas that are not in json object
+                                aReview['url'] = "From_DataSet"
+                                aReview['username'] = "From_DataSet"
+                                aReview['user_url'] = "From_DataSet"
+                                aReview['source'] = "imdb"
+                                aReview['date'] = date(2050,1,1)
+
+                        else:
+
+                            # escape, don't need to insert any datas on db   
+                            logger.warning('Review url already exist, and its not from dataset')
+                            continue
+
+
+                except Exception as e:
+                    logger.error(f'got problem with url testing : {aReview["url"]}, and prepares datas', exc_info=True)
+
+                # prepare review object to inject in db
+                myReview = Review(
+                                    url=aReview['url'],
+                                    text=aReview['text'],
+                                    score=aReview['score'],
+                                    source=aReview['source'],
+                                    date=aReview['date'],
+                                    reviewers=myReviewer,
+                                    movies=myMovie
+                                )                
+
+                # send reviewers and review object on db
+                try:
                     session.add(myReview)
                     session.commit()
+                except Exception as e:
+                    logger.error(f'got problem sending reviewers and review object : {aReview["url"]}, and prepares datas', exc_info=True)
 
             else:
+                # movie doesn't exist on db so, no movies no reviews
                 logger.error(f'Source movie not found : {movie_key}', exc_info=True)
             
             # one more review has been treated
