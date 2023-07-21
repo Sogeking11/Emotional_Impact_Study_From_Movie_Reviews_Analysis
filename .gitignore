@@ -3,6 +3,8 @@
 
 # my ignored files
 csvfile_to_dict.py
+docker/data/api_keys.py
+docker/data/*.json
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
