@@ -80,3 +80,6 @@ def restruct_redaJsonFile(jsonFile):
         json.dump(restruct_json, outfile, ensure_ascii=False)
 
     return file_name
+
+if __name__ == "__main__":
+    restruct_redaJsonFile("datas/test_reviews.json")

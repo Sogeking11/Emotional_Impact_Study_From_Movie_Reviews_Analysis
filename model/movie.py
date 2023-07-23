@@ -7,7 +7,7 @@ class Movie(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     title = Column(String(100))
     certification = Column(String(10))
-    revenue = Column(Integer)
+    revenue = Column(BigInteger)
     budget = Column(Integer)
     review_score = Column(Float)
     release_date = Column(Date)

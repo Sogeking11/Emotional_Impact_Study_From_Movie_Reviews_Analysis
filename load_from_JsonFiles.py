@@ -48,18 +48,35 @@ def load_movies(jsonMovieFile: str):
         i+=1
 
         # Table movie
-        myFilm = movie_instance(OneFilm)
-
-        # check if movie exist on db passing by source table
         try:
-            mySource = session.query(Source).filter_by(movie_key=OneFilm['id_imdb']).first()
+            myFilm = movie_instance(OneFilm)
         except:
-            logger.warning('No source for this film', OneFilm['id_imdb'])
-            continue
+            logger.error("l'objet film n'a pas été créer",OneFilm["title"])
 
-        if mySource is not None:
+
+        if session.query(Source).filter_by(movie_key=OneFilm['id_imdb']).first() is not None:
             # get movie object to use it
+            mySource = session.query(Source).filter_by(movie_key=OneFilm['id_imdb']).first()
             myFilm = session.query(Movie).filter_by(id=mySource.movie_id).first()
+        else:
+            # a new movie to send on db
+
+            # Table source for imdb reference
+            try:
+                if source_instance(OneFilm, 'imdb') is not None:
+                    mySource1 = source_instance(OneFilm, 'imdb')
+                    myFilm.sources.append(mySource1)
+                    session.add(mySource1)
+            except:
+                logging.warning('No imdb source for this film')
+
+            try:
+                if source_instance(OneFilm,'tmdb') is not None:
+                    mySource2 = source_instance(OneFilm,'tmdb')
+                    myFilm.sources.append(mySource2)
+                    session.add(mySource2)
+            except:
+                logging.warning('No tmdb source for this film')
 
 
         
@@ -67,23 +84,7 @@ def load_movies(jsonMovieFile: str):
         sys.stdout.write('Film ' + str(i) + '\\' + str(len(json_object)) + ': ' + str(OneFilm['title']) + ' : Traitement\r')
         sys.stdout.flush()
 
-        # Table source, just 2 sources possible
-        try:
-            if source_instance(OneFilm, 'imdb') is not None:
-                mySource1 = source_instance(OneFilm, 'imdb')
-                myFilm.sources.append(mySource1)
-                session.add(mySource1)
-        except:
-            logging.warning('No imdb source for this film')
 
-
-        try:
-            if source_instance(OneFilm,'tmdb') is not None:
-                mySource2 = source_instance(OneFilm,'tmdb')
-                myFilm.sources.append(mySource2)
-                session.add(mySource2)
-        except:
-            logging.warning('No tmdb source for this film')
 
         # Table country
         try:
