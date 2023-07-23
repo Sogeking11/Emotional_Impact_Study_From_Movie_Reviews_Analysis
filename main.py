@@ -23,38 +23,51 @@ if __name__ == '__main__':
 
      # Load the data from the json file
      load_movies('datas/test-urls_neg_dataset.json')
+     logging.info("Load movies from test-urls_neg_dataset.json")
      # load_reviews
      load_reviews("datas/test-urls_neg_Reviews_dataset.json")
+     logging.info("Load reviews from test-urls_neg_Reviews_dataset.json")
 
      # Load the data from the json file
      load_movies('datas/test-urls_pos_dataset.json')
+     logging.info("Load movies from test-urls_pos_dataset.json")
      # load_reviews
      load_reviews("datas/test-urls_pos_Reviews_dataset.json")
+     logging.info("Load reviews from test-urls_pos_Reviews_dataset.json")
 
 
      # dataset train
 
      # Load the data from the json file
      load_movies('datas/train-urls_neg_dataset.json')
+     logging.info("Load movies from train-urls_neg_dataset.json")
      # load_reviews
      load_reviews("datas/train-urls_neg_Reviews_dataset.json")
+     logging.info("Load reviews from train-urls_neg_Reviews_dataset.json")
 
      # Load the data from the json file
      load_movies('datas/train-urls_pos_dataset.json')
+     logging.info("Load movies from train-urls_pos_dataset.json")
      # load_reviews
      load_reviews("datas/train-urls_pos_Reviews_dataset.json")
+     logging.info("Load reviews from train-urls_pos_Reviews_dataset.json")
 
      # Load the data from the json file
      load_movies('datas/train-urls_unsup_dataset.json')
+     logging.info("Load movies from train-urls_unsup_dataset.json")
      # load_reviews
      load_reviews("datas/train-urls_unsup_Reviews_dataset.json")
+     logging.info("Load movies from train-urls_unsup_dataset.json")
+
 
 
      # from scrapingTest
 
      # Load the data from the json file
      load_movies('datas/test_movies.json')
+     logging.info("Load movies from test_movies.json")
      # load_reviews
      load_reviews("datas/test_reviews_restructured.json")
+     logging.info("Load reviews from test_reviews_restructured.json")
 
 

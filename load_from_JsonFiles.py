@@ -30,7 +30,7 @@ def load_movies(jsonMovieFile: str):
     #Opening JSON file
 
     # test logger
-    logger.info('test logger')
+    logger.info('Send Movies to DB')
 
     with open(jsonMovieFile, 'r', encoding='utf-8') as openfile:
 
@@ -214,18 +214,10 @@ def load_reviews(file_name):
                 try:
                     if session.query(Review).filter_by(url=aReview['url']).first() is None:
 
-                        # Here to prepare reviewer and review datas objects
-                        try:
-                            myReviewer = Reviewer(username=aReview['username'], url=aReview['user_url'])
-                        except Exception as e:
-                            logger.exception('could not create new reviewer')
-
-                    else:
-
-                        # Review url already exist, but need to know if its from dataset
+                        # here we must define if it's from Dataset or from scrap
                         if aReview['url'] == "From_DataSet":
 
-                            # need to check if the reviewer is fake (cf: dataset)
+                            # need to get the fake reviewer if exist (cf: dataset)
                             if session.query(Reviewer).filter_by(url="From_DataSet").first() is not None:
 
                                 # Here to prepare reviewer from dataset reviewer and review datas objects
@@ -235,11 +227,53 @@ def load_reviews(file_name):
                                     logger.error('could not get Dataset Reviewer object')
                                 
                                 # preparing review datas that are not in json object
-                                aReview['url'] = "From_DataSet"
-                                aReview['username'] = "From_DataSet"
-                                aReview['user_url'] = "From_DataSet"
-                                aReview['source'] = "imdb"
-                                aReview['date'] = date(2050,1,1)
+
+                            else:
+                                # Dataset reviewer must be created   
+                                myReviewer = Reviewer(username="XXXXXXXXXXXX", url="From_DataSet")
+
+                            # datas Review object
+                            aReview['url'] = "From_DataSet"
+                            aReview['username'] = "From_DataSet"
+                            aReview['user_url'] = "From_DataSet"
+                            aReview['source'] = "imdb"
+                            aReview['date'] = date(2050,1,1)
+
+
+                        else:
+                            # Here to prepare reviewer and review datas objects 
+                            try:
+                                myReviewer = Reviewer(username=aReview['username'], url=aReview['user_url'])
+                            except Exception as e:
+                                logger.exception('could not create new reviewer')
+
+                    else:
+
+                        # here we must define if it's from Dataset or from scrap
+                        if aReview['url'] == "From_DataSet":
+
+                            # need to get the fake reviewer if exist (cf: dataset)
+                            if session.query(Reviewer).filter_by(url="From_DataSet").first() is not None:
+
+                                # Here to prepare reviewer from dataset reviewer and review datas objects
+                                try:
+                                    myReviewer = session.query(Reviewer).filter_by(url="From_DataSet").first()
+                                except Exception as e:
+                                    logger.error('could not get Dataset Reviewer object')
+                                
+                                # preparing review datas that are not in json object
+
+                            else:
+                                # Dataset reviewer must be created   
+                                myReviewer = Reviewer(username="XXXXXXXXXXXX", url="From_DataSet")
+
+                            # datas Review object
+                            aReview['url'] = "From_DataSet"
+                            aReview['username'] = "From_DataSet"
+                            aReview['user_url'] = "From_DataSet"
+                            aReview['source'] = "imdb"
+                            aReview['date'] = date(2050,1,1)
+                            aReview['date'] = date(2050,1,1)
 
                         else:
 
