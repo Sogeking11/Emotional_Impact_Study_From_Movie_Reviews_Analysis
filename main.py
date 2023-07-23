@@ -67,7 +67,7 @@ if __name__ == '__main__':
      #load_movies('datas/test_movies.json')
      #logging.info("Load movies from data_full movies.json")
      # # load_reviews
-     load_reviews("datas/test_reviews_restructured.json")
+     load_reviews("datas/full_reviews_restructured.json")
      logging.info("Load reviews from test_reviews_restructured.json")
 
 

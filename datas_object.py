@@ -88,7 +88,8 @@ def movie_instance(json_object):
 
     try:
         if data_exist(json_object['release_date']):
-            release_date = json_object['release_date']
+            if json_object['release_date'] != '':
+                release_date = json_object['release_date']
     except KeyError as e:
         logger.warning("Cant assign release_date parameters to movie object: %s", e)
 

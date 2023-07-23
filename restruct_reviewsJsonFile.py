@@ -75,11 +75,11 @@ def restruct_redaJsonFile(jsonFile):
         
 
     # write json to file
-    file_name = 'datas/test_reviews_restructured.json'
+    file_name = 'datas/full_reviews_restructured.json'
     with open(file_name, 'w', encoding='utf-8') as outfile:
         json.dump(restruct_json, outfile, ensure_ascii=False)
 
     return file_name
 
 if __name__ == "__main__":
-    restruct_redaJsonFile("datas/test_reviews.json")
+    restruct_redaJsonFile("datas/full_reviews.json")
