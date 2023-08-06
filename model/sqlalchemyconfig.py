@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, SmallInteger,Integer, Float, String, BLOB, Date, ForeignKey, Table
+from sqlalchemy import create_engine, Column, SmallInteger,Integer, BIGINT, Float, String, TEXT, BLOB, Date, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declared_attr

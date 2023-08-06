@@ -12,7 +12,7 @@ class Review(Base):
     score = Column(Integer)
     url = Column(String(500))
     source = Column(String(45))
-    text = Column(String(65530))
+    text = Column(TEXT(16383))
 
     #  4. Back reference to Reviewer and movie tables
     movies = relationship('Movie', back_populates='reviews')

@@ -312,3 +312,17 @@ def load_reviews(file_name):
             # clean stdout
             sys.stdout.write('              '*10 + '\r')
             sys.stdout.flush()
+
+
+
+if __name__ == "__main__":
+     
+    # Create the tables in the database
+    Base.metadata.create_all(engine)
+
+    # Load the data from the json test file
+    load_movies('datas/test_movies.json')
+    logging.info("Load movies from test_movies.json")
+    # load_reviews
+    load_reviews("datas/test_reviews_restructured.json")
+    logging.info("Load reviews from test_reviews_restructured.json")
