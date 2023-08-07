@@ -28,7 +28,7 @@ def data_exist(object):
         object (json): data to check
 
     Returns:
-        bool: True if data is not None, False otherwise
+        bool: True if data exist, False otherwise
     """
     
     if object is None:

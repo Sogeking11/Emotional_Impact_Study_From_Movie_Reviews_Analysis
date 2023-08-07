@@ -1,27 +1,76 @@
 import sys
 import json
 import logging
+from pathlib import Path
 
 from model import Movie, Country, Genre, Keyword, Prod_Company, Role, Review, Reviewer
 from datas_object import *
 
-# logging basic config
-logging.basicConfig(level=logging.INFO,filename="logs/log.log", filemode="w",
-                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s') 
-
+# data dir path
+data_dir = Path("datas")
 
 # logger config
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("logs/" + __name__ + ".log")
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+# creates Handlers
+handler_1 = logging.FileHandler("logs/" + __name__ + ".log")
+handler_2 = logging.StreamHandler() # stdout handle the log
+handler_3 = logging.FileHandler("logs/errors/" + __name__ + ".log")
 
 
-def load_movies(jsonMovieFile: str):
-    """This function loads movies and all them
-    datas on to db.
+# setting handlers
+handler_1.setLevel(logging.DEBUG)
+handler_2.setLevel(logging.ERROR)
+handler_3.setLevel(logging.ERROR)
+
+# logger level
+logger.setLevel(logging.DEBUG)
+
+# formatters + adding them on handlers
+formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter_2 = logging.Formatter('%(levelname)s - %(message)s')
+formatter_3 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler_1.setFormatter(formatter_1)
+handler_2.setFormatter(formatter_2)
+handler_3.setFormatter(formatter_3)
+logger.addHandler(handler_1)
+logger.addHandler(handler_2)
+logger.addHandler(handler_3)
+
+
+def fileToJson(filePath):
+    """
+    This function loads a json file and returns the json object.
+
+    Args:
+        filePath (str): path of json file
+
+    Returns:
+        json_object (dict): json object of the file
+    
+    """
+    try:
+
+        with open(filePath, 'r', encoding='utf-8') as openfile:
+
+            # get json object from json file
+            json_object = json.load(openfile)
+                
+    except FileNotFoundError:
+        logger.error(f"the file {filePath} does not exist.")
+        sys.exit(0)
+        
+    except Exception as e:
+        logger.error("An Error occured", str(e))
+        sys.exit(0)
+    else:
+        return json_object
+    
+
+
+def load_movies(jsonMovieFile: Path):
+    """This function loads movies and all their
+    datas into db.
 
     Args:
         jsonMovieFile (str): path of json movies file
@@ -32,13 +81,8 @@ def load_movies(jsonMovieFile: str):
     # test logger
     logger.info('Send Movies to DB')
 
-    with open(jsonMovieFile, 'r', encoding='utf-8') as openfile:
-
-        # Reading from json file
-        try:
-            json_object = json.load(openfile)
-        except ValueError as e:
-            logging.error('invalid json: %s' % e)
+    # get json object from file
+    json_object = fileToJson(jsonMovieFile)
 
     # needed for stdout info saying how many movies has been treated
     i = 0
@@ -321,8 +365,9 @@ if __name__ == "__main__":
     Base.metadata.create_all(engine)
 
     # Load the data from the json test file
-    load_movies('datas/test_movies.json')
-    logging.info("Load movies from test_movies.json")
-    # load_reviews
-    load_reviews("datas/test_reviews_restructured.json")
-    logging.info("Load reviews from test_reviews_restructured.json")
+    file_test = data_dir / "test_movies.json"
+    load_movies(file_test)
+    # logging.info("Load movies from test_movies.json")
+    # # load_reviews
+    # load_reviews("datas/test_reviews_restructured.json")
+    # logging.info("Load reviews from test_reviews_restructured.json")
