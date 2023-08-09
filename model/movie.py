@@ -22,4 +22,4 @@ class Movie(Base):
     countries = relationship("Country", secondary=movie_has_country_link, back_populates="movies")
     keywords = relationship("Keyword", secondary=movie_has_keyword_link, back_populates="movies")
     genres = relationship("Genre", secondary=genre_has_movie_link, back_populates="movies")
-    prod_companies = relationship("Prod_Company", secondary=prod_company_has_movie_link, back_populates="movies")
+    production_companies = relationship("Prod_Company", secondary=prod_company_has_movie_link, back_populates="movies")

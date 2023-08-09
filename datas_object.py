@@ -6,35 +6,34 @@ from model import Movie, Country, Genre, Keyword, Prod_Company, Source, Particip
 from model.sqlalchemyconfig import *
 
 
-# logging basic config
-logging.basicConfig(level=logging.INFO,filename="logs/log.log", filemode="w",
-                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s') 
-
-
 # logger config
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("logs/" + __name__ + ".log")
-#handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+# creates Handlers
+handler_1 = logging.FileHandler("logs/" + __name__ + ".log")
+handler_2 = logging.StreamHandler() # stdout handle the log
+handler_3 = logging.FileHandler("logs/errors/" + __name__ + ".log")
 
 
+# setting handlers
+handler_1.setLevel(logging.DEBUG)
+handler_2.setLevel(logging.ERROR)
+handler_3.setLevel(logging.ERROR)
 
-def data_exist(object):
-    """Check if a data is not None
+# logger level
+logger.setLevel(logging.DEBUG)
 
-    Args:
-        object (json): data to check
+# formatters + adding them on handlers
+formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter_2 = logging.Formatter('%(levelname)s - %(message)s')
+formatter_3 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler_1.setFormatter(formatter_1)
+handler_2.setFormatter(formatter_2)
+handler_3.setFormatter(formatter_3)
+logger.addHandler(handler_1)
+logger.addHandler(handler_2)
+logger.addHandler(handler_3)
 
-    Returns:
-        bool: True if data exist, False otherwise
-    """
-    
-    if object is None:
-        return False
-    else:
-        return True
 
 def movie_instance(json_object):
     """Create a Movie object from a json object
@@ -51,61 +50,62 @@ def movie_instance(json_object):
     revenue = 0
     budget = 0
     review_score = 0.0
-    release_date = date(2050, 12, 13)
+    release_date = date(2050, 3, 21) # printemps 2050
     popularity = 0.0
     runtime = 0
     synopsis = 'None'
     # assign parameters if possible
     try:
-        if data_exist(json_object['title']):
+        if json_object['title'] is not None:
             title = json_object['title']
     except KeyError as e:
         logger.warning("Cant assign title parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['certification']):
+        if json_object['certification'] is not None:
             certification = json_object['certification']
     except KeyError as e:
         logger.warning("Cant assign certification parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['revenue']):
+        if json_object['revenue'] is not None:
             revenue = json_object['revenue']         
     except KeyError as e:
         logger.warning("Cant assign revenue parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['budget']):
+        if json_object['budget'] is not None:
             budget = json_object['budget']        
     except KeyError as e:
         logger.warning("Cant assign budget parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['review_score']):
+        if json_object['review_score'] is not None:
             review_score = json_object['review_score']
     except KeyError as e:
         logger.warning("Cant assign review_score parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['release_date']):
+        myDate = json_object['release_date'] 
+        if myDate is not None and myDate!= '':
             release_date = json_object['release_date']
     except KeyError as e:
         logger.warning("Cant assign release_date parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['popularity']):
+        if json_object['popularity'] is not None:
             popularity = json_object['popularity']
     except KeyError as e:
         logger.warning("Cant assign popularity parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['runtime']):
+        if json_object['runtime'] is not None:
             runtime = json_object['runtime']
     except KeyError as e:
         logger.warning("Cant assign runtime parameters to movie object: %s", e)
 
     try:
-        if data_exist(json_object['synopsis']):
+        if json_object['synopsis'] is not None:
             synopsis = json_object['synopsis']
     except KeyError as e:
         logger.warning("Cant assign synopsis parameters to movie object: %s", e)
@@ -124,36 +124,10 @@ def movie_instance(json_object):
     
     return movie_obj
 
-
-def source_instance(json_object, src: str):
-    """Create a Source object from a json object
-
-    Args:
-        json_object (json): comming from json file containing movies list
-        src (str): source name
-
-    Returns:
-        Source object from sqlamlchemy mapping: image of the Source table on DB
-    """
-
-    # parameters initialization
-    movie_key = 'None'
-    # assign parameters if possible
-    if data_exist(json_object['id_'+ src]):
-        movie_key = json_object['id_'+ src]
-        source_obj = Source(name=src, movie_key=movie_key)
-        # test if the movie_key is already in the database
-        if session.query(Source).filter_by(movie_key=movie_key).first() is not None:
-            source_obj = session.query(Source).filter_by(movie_key=movie_key).first()
-        return source_obj
-    else:
-        return None
-
-    
     
 def which_Entity(content: str, data:str):
-    """Because several table got the same strucutred
-    this function will help makeORM_instance function
+    """Because several table got the same structured
+    this function will help makeORM_instanceList function
     to determine wich table as to be treated
 
     Args:
@@ -166,10 +140,8 @@ def which_Entity(content: str, data:str):
     """
 
     # Test if the object is empty
-    if data_exist(data):
-        data = data
-    else:
-        logging.info("Object is empty")
+    if data is None:
+        logger.info(f"No {content} for a movie")
         return None
     
     # Create object from sqlamlchemy mapping
@@ -185,7 +157,7 @@ def which_Entity(content: str, data:str):
     
     return None
 
-def makeORM_instance(json_object, tableContent: str):
+def makeORM_instanceList(json_object, tableContent: str):
     """Create a list of ORM object from a json object
     that function is designed to care of Country, Genre, 
     Keyword, Prod_Company entities.
@@ -200,7 +172,7 @@ def makeORM_instance(json_object, tableContent: str):
     
     """
     # Test if the object is empty
-    if data_exist(json_object[tableContent]):
+    if json_object[tableContent] is not None and len(json_object[tableContent]) > 0:
         tableContent_list = json_object[tableContent]
         ORMInstance_list = []
         for content in tableContent_list:
@@ -223,21 +195,23 @@ def role_instance(json_object):
     role_list = []
 
     # Test if the object is empty
-    if data_exist(json_object['role']):
+    if json_object['role'] is not None:
         for role in json_object['role']:
+
             # init parameters before to assign them
             that_role = 'None'
             name = 'None'
             gender = 0
             popularity = 0.0
+
             # assign parameters
-            if data_exist(role['role']):
+            if role['role'] is not None:
                 that_role = role['role']
-            if data_exist(role['gender']):
+            if role['gender'] is not None:
                 gender = role['gender']
-            if data_exist(role['popularity']):
+            if role['popularity'] is not None:
                 popularity = role['popularity']
-            if data_exist(role['name']):
+            if role['name'] is not None:
                 name = role['name']
             # create object datas to send them as return function
             participant_obj = Participant(name=name, gender=gender, popularity=popularity)
