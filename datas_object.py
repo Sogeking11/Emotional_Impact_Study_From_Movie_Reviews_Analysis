@@ -2,7 +2,7 @@ from datetime import date
 import logging
 
 
-from model import Movie, Country, Genre, Keyword, Prod_Company, Source, Participant
+from model import Movie, Country, Genre, Keyword, Prod_Company,Participant
 from model.sqlalchemyconfig import *
 
 
@@ -35,6 +35,7 @@ logger.addHandler(handler_2)
 logger.addHandler(handler_3)
 
 
+
 def movie_instance(json_object):
     """Create a Movie object from a json object
 
@@ -50,65 +51,37 @@ def movie_instance(json_object):
     revenue = 0
     budget = 0
     review_score = 0.0
-    release_date = date(2050, 3, 21) # printemps 2050
+    release_date = date(2050, 3, 21) # printemps 2050 means no date from source
     popularity = 0.0
     runtime = 0
     synopsis = 'None'
-    # assign parameters if possible
-    try:
-        if json_object['title'] is not None:
-            title = json_object['title']
-    except KeyError as e:
-        logger.warning("Cant assign title parameters to movie object: %s", e)
 
-    try:
-        if json_object['certification'] is not None:
-            certification = json_object['certification']
-    except KeyError as e:
-        logger.warning("Cant assign certification parameters to movie object: %s", e)
+    # parameters list
+    parameters_list = [ 'title',
+                        'certification',
+                        'revenue',
+                        'budget',
+                        'review_score',
+                        'popularity',
+                        'runtime',
+                        'synopsis']
+    
+    for parameter in parameters_list:
 
-    try:
-        if json_object['revenue'] is not None:
-            revenue = json_object['revenue']         
-    except KeyError as e:
-        logger.warning("Cant assign revenue parameters to movie object: %s", e)
+        # In case the parameter do not exist
+        parameter_value = key_exist_or_not(json_object, parameter)
 
-    try:
-        if json_object['budget'] is not None:
-            budget = json_object['budget']        
-    except KeyError as e:
-        logger.warning("Cant assign budget parameters to movie object: %s", e)
+        if parameter_value is not None:
+            parameter = parameter_value
 
-    try:
-        if json_object['review_score'] is not None:
-            review_score = json_object['review_score']
-    except KeyError as e:
-        logger.warning("Cant assign review_score parameters to movie object: %s", e)
 
-    try:
-        myDate = json_object['release_date'] 
-        if myDate is not None and myDate!= '':
-            release_date = json_object['release_date']
-    except KeyError as e:
-        logger.warning("Cant assign release_date parameters to movie object: %s", e)
+    # same treatment as above except the case on date is ''    
+    myDate = key_exist_or_not(json_object, 'release_date')
 
-    try:
-        if json_object['popularity'] is not None:
-            popularity = json_object['popularity']
-    except KeyError as e:
-        logger.warning("Cant assign popularity parameters to movie object: %s", e)
+    if myDate is not None and myDate != '':
+        release_date = json_object['release_date']
 
-    try:
-        if json_object['runtime'] is not None:
-            runtime = json_object['runtime']
-    except KeyError as e:
-        logger.warning("Cant assign runtime parameters to movie object: %s", e)
 
-    try:
-        if json_object['synopsis'] is not None:
-            synopsis = json_object['synopsis']
-    except KeyError as e:
-        logger.warning("Cant assign synopsis parameters to movie object: %s", e)
 
     # Table movie
     movie_obj = Movie(title=title,
@@ -157,6 +130,7 @@ def which_Entity(content: str, data:str):
     
     return None
 
+
 def makeORM_instanceList(json_object, tableContent: str):
     """Create a list of ORM object from a json object
     that function is designed to care of Country, Genre, 
@@ -171,9 +145,11 @@ def makeORM_instanceList(json_object, tableContent: str):
         list: list of object from sqlamlchemy mapping
     
     """
+    entity_object = key_exist_or_not(json_object, tableContent)
+
     # Test if the object is empty
-    if json_object[tableContent] is not None and len(json_object[tableContent]) > 0:
-        tableContent_list = json_object[tableContent]
+    if entity_object is not None and len(entity_object) > 0:
+        tableContent_list = entity_object
         ORMInstance_list = []
         for content in tableContent_list:
             content_obj = which_Entity(tableContent, content)
@@ -182,7 +158,19 @@ def makeORM_instanceList(json_object, tableContent: str):
         return ORMInstance_list
     else:
         return None
-    
+
+
+def key_exist_or_not(object, key):
+    """Care of KeyError exception.
+    In this case, we assign None to parameter.
+    """
+    try:
+        value = object[key]
+    except KeyError:
+        value = None
+    return value
+
+  
 def role_instance(json_object): 
     """Create a list of Role object from a json object
 
@@ -194,8 +182,10 @@ def role_instance(json_object):
     """
     role_list = []
 
+    role_object = key_exist_or_not(json_object, 'role')
+
     # Test if the object is empty
-    if json_object['role'] is not None:
+    if role_object is not None:
         for role in json_object['role']:
 
             # init parameters before to assign them
@@ -213,12 +203,14 @@ def role_instance(json_object):
                 popularity = role['popularity']
             if role['name'] is not None:
                 name = role['name']
+
             # create object datas to send them as return function
             participant_obj = Participant(name=name, gender=gender, popularity=popularity)
             if session.query(Participant).filter_by(name=name).first() is not None:
                 participant_obj = session.query(Participant).filter_by(name=name).first()
             dataRole = {'role': that_role, 'participant': participant_obj}
             role_list.append(dataRole)
+
         return role_list      
 
     else:

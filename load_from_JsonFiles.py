@@ -2,9 +2,11 @@ import sys
 import json
 import logging
 from pathlib import Path
+from datetime import date
 
-from model import Movie, Country, Genre, Keyword, Prod_Company, Role, Review, Reviewer
-from datas_object import *
+from model.sqlalchemyconfig import *
+from model import Movie, Country, Genre, Keyword, Source, Prod_Company, Role, Review, Reviewer
+from datas_object import movie_instance, key_exist_or_not, makeORM_instanceList, role_instance
 
 
 # data dir path
@@ -115,7 +117,9 @@ def load_movies(jsonMovieFile: Path):
             myFilm.sources.append(mySource1)
             session.add(mySource1)
 
-            if OneFilm['id_tmdb'] is not None:
+            tmdb = key_exist_or_not(OneFilm, 'id_tmdb')
+
+            if tmdb is not None:
                 mySource2 = Source(name="tmdb", movie_key=id_tmdb)
                 myFilm.sources.append(mySource2)
                 session.add(mySource2)
@@ -134,7 +138,7 @@ def load_movies(jsonMovieFile: Path):
         sys.stdout.flush()
         logger.info(f'Film {i} of {len(json_object)}: {OneFilm["title"]} : Traitement')
 
-        # operation on four tables that got same srtucture
+        # operation on four tables that got same structure
         entity_dict = {
             'genres': Genre,
             'countries': Country,
@@ -197,17 +201,17 @@ def push_review(review_dict, myMovie):
 
         # check if reviewer is already in db
         try:
-            myReviewer = session.query(Reviewer).filter_by(username=review_dict['username']).first()
+            myReviewer = session.query(Reviewer).filter_by(username="AI_DataSet_Reviewer").first()
         except:
             logger.error(f"An Error occured on checking if reviewer {review_dict['username']} is already in db")
         
         if myReviewer is None:
             # Dataset reviewer must be created   
-            myReviewer = Reviewer(username="XXXXXXXXXXXX", url="From_DataSet")
+            myReviewer = Reviewer(username="AI_DataSet_Reviewer", url="From_DataSet")
 
         # datas Review object
         review_dict['source'] = "imdb"
-        review_dict['date'] = date(2050,1,1)
+        review_dict['date'] = date(2050,3,21) # printemps 2050
 
 
     else:
@@ -263,7 +267,7 @@ def load_reviews(jsonReviewsFile):
         try:
             mySource = session.query(Source).filter_by(movie_key=imdb_id).first()
         except:
-            logger.error(f"An Error occured on getting source object for id_imdb {imdb_id}")
+            logger.error(f"occured on getting source object for id_imdb {imdb_id}")
             continue
         # get movie object to help create Review object in case of review does not exist
         try:
@@ -313,22 +317,25 @@ def load_reviews(jsonReviewsFile):
 
 if __name__ == "__main__":
      
-    # Create the tables in the database
+    # Create the tables in the database if doesn't exist
     Base.metadata.create_all(engine)
 
-    # Load the movies from the json test file
-    movie_test_file = data_dir / "data_full.json"
-    load_movies(movie_test_file)
+    filesToLoad = {
+        # 'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
+        # 'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
+        # 'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
+        # 'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
+        # 'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
+        # 'test_movies.json': 'test_reviews_restructured.json',
+        'data_full.json':'full_reviews_restructured.json'
+    }
+
+    for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
+
+        # Load the movies from the json file
+        # movieFile = data_dir / jsonMoviesFile
+        # load_movies(movieFile)
   
-    # # load_reviews
-    review_test_file = data_dir / "full_reviews_restructured.json"
-    load_reviews(review_test_file)
-
-
-    # dataset test
-
-    # Load the data from the json file
-    # movie_NEGdataset_file = data_dir / "test-urls_neg_dataset.json"
-    # load_movies(movie_NEGdataset_file)
-    # load_reviews
-    # load_reviews("datas/test-urls_neg_Reviews_dataset.json")
+        # # load_reviews
+        reviewFile = data_dir / jsonReviewsFile
+        load_reviews(reviewFile)
