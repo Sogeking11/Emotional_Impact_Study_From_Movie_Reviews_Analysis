@@ -1,4 +1,15 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Movie class.
+"""
+
+# Import packages and modules
+from sqlalchemy import Column,Integer, String, BIGINT, Float, Date
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
+
+
+from .association import movie_has_country_link, movie_has_keyword_link, genre_has_movie_link, prod_company_has_movie_link
 
 # Define Movie table
 class Movie(Base):

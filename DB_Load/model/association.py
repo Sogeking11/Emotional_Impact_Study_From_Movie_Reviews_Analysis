@@ -1,25 +1,13 @@
-from sqlalchemy import create_engine, Column, SmallInteger,Integer, BIGINT, Float, String, TEXT, BLOB, Date, ForeignKey, Table
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.declarative import declared_attr
+"""
+This module defines the association tables between different tables
+"""
 
-from dataset_extract_stock import loadEnv
+# Import packages and modules
+from sqlalchemy import Column, Integer, ForeignKey, Table
 
-
-# Create the SQLAlchemy engine and session
-engine = create_engine("mysql+mysqlconnector://" + loadEnv("DB_USER")
-                                                 + ":" + loadEnv("DB_PASSWORD")
-                                                 + "@" + loadEnv("DB_HOST")
-                                                 + ":" + loadEnv("DB_PORT") + "/"
-                                                 + loadEnv("DB_NAME")
-                                                 )
-Session = sessionmaker(bind=engine)
-session = Session()
+from .sqlalchemyconfig import Base
 
 
-
-# Declare the base class for declarative models
-Base = declarative_base()
 
 ##############################
 # Define associations tables #

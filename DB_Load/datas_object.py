@@ -1,9 +1,14 @@
+"""
+This module contains the functions to create the objects from the json files.
+It is used by functions load-Movies() and load_reviews() in load_from_JsonFiles module.
+"""
+
+# import modules
 from datetime import date
 import logging
 
 
-from model import Movie, Country, Genre, Keyword, Prod_Company,Participant
-from model.sqlalchemyconfig import *
+from DB_Load.model import Movie, Country, Genre, Keyword, Prod_Company,Participant
 
 
 # logger config
@@ -171,7 +176,7 @@ def key_exist_or_not(object, key):
     return value
 
   
-def role_instance(json_object): 
+def role_instance(json_object, session): 
     """Create a list of Role object from a json object
 
     Args:

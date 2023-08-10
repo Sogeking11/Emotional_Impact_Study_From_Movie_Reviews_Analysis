@@ -2,7 +2,7 @@ import sys
 import pandas as p
 import pymysql as maria
 from pymysql.connections import Connection
-from loadEnv import loadEnv
+from DB_Load.model.loadEnv import loadEnv
 
 
 

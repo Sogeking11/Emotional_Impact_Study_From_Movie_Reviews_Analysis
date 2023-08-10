@@ -1,3 +1,8 @@
+"""
+Aims to allow getting environment variables from .env file
+"""
+
+# Import Packages
 from dotenv import load_dotenv
 import os
 

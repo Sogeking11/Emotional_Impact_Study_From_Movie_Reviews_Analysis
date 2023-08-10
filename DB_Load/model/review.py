@@ -1,4 +1,12 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Review class.
+"""
+
+# Import packages and modules
+from sqlalchemy import Column,Integer, String, Date, TEXT, ForeignKey
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
 
 
 # Define Review table

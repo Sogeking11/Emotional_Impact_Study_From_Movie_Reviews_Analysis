@@ -1,12 +1,17 @@
+"""
+This module is used to load data from json files to the database.
+"""
+
+# import modules and packages
 import sys
 import json
 import logging
 from pathlib import Path
 from datetime import date
 
-from model.sqlalchemyconfig import *
-from model import Movie, Country, Genre, Keyword, Source, Prod_Company, Role, Review, Reviewer
-from datas_object import movie_instance, key_exist_or_not, makeORM_instanceList, role_instance
+from DB_Load.model.sqlalchemyconfig import get_session
+from DB_Load.model import Movie, Country, Genre, Keyword, Source, Prod_Company, Role, Review, Reviewer
+from DB_Load.datas_object import movie_instance, key_exist_or_not, makeORM_instanceList, role_instance
 
 
 # data dir path
@@ -78,6 +83,11 @@ def load_movies(jsonMovieFile: Path):
     Args:
         jsonMovieFile (str): path of json movies file
     """
+    # get session to operate on db
+    try:
+        session = get_session()
+    except:
+        logger.error("Can't get session")
 
     # test logger
     logger.info('\n================== Start loading movies =====================')
@@ -105,7 +115,7 @@ def load_movies(jsonMovieFile: Path):
         try:
             mySource = session.query(Source).filter_by(movie_key=id_imdb).first()
         except:
-            logger.error(f"An Error occured on checking the source {id_imdb} exist on db")
+            logger.error(f"An Error occured on checking the source {id_imdb} if exist on db")
             continue
 
         if mySource is None:
@@ -163,13 +173,12 @@ def load_movies(jsonMovieFile: Path):
                 logger.info(f'No {entity_name} for {OneFilm["title"]} film')
         
         # Tables participant and role
-        try:
-            if role_instance(OneFilm) is not None:
-                for role in role_instance(OneFilm):
-                    myRole = Role(movies=myFilm, name=role['role'], participants=role['participant'])
-                    session.add(myRole)
-        except:
-            logger.warning('No participants for this film')
+        role_instance_list = role_instance(OneFilm,session)
+        if role_instance_list is not None:
+            for role in role_instance_list:
+                myRole = Role(movies=myFilm, name=role['role'], participants=role['participant'])
+                session.add(myRole)
+
 
         # Add to database
         try:
@@ -186,7 +195,7 @@ def load_movies(jsonMovieFile: Path):
         sys.stdout.flush()
 
 
-def push_review(review_dict, myMovie):
+def push_review(review_dict, myMovie, session):
     """This function push a review and its metadata in db.
 
     Args:
@@ -248,6 +257,19 @@ def push_review(review_dict, myMovie):
 
 
 def load_reviews(jsonReviewsFile):
+    """
+    Principal function to send reviews
+
+    Args:
+        jsonReviewsFile (str): path to the json file containing reviews
+    """
+
+    # get session to operate on db
+    try:
+        session = get_session()
+    except:
+        logger.error("Can't get session to load reviews")
+
     # test logger
     logger.info('\n================== Start loading reviews =====================')
     logger.info('Send reviews to DB')
@@ -261,6 +283,9 @@ def load_reviews(jsonReviewsFile):
 
     # go through each imdb movie ids in the dictionnary
     for imdb_id, review_list in json_object.items():
+
+        # initialise myMovie
+        myMovie = None
 
         # get the movie object
         #Start by getting source object to get movie object
@@ -297,7 +322,7 @@ def load_reviews(jsonReviewsFile):
             if review_in_db is None:
                 # push review on db
                 try:
-                    push_review(review_dict, myMovie)
+                    push_review(review_dict, myMovie, session)
                 except:
                     logger.error(f"An Error occured on pushing review object for url {review_dict['url']}")
 
@@ -305,37 +330,10 @@ def load_reviews(jsonReviewsFile):
                 # care of url in db is From_Dataset
                 # if it's not from dataset do nothing
                 if review_in_db.url == "From_DataSet":
-                    push_review(review_dict, myMovie)
+                    push_review(review_dict, myMovie, session)
 
             cmpt += 1
             # clean stdout
             sys.stdout.write('              '*10 + '\r')
             sys.stdout.flush()
             logger.info(f'Review number {cmpt-1} from url {review_dict["url"]} has been treated')
-
-
-
-if __name__ == "__main__":
-     
-    # Create the tables in the database if doesn't exist
-    Base.metadata.create_all(engine)
-
-    filesToLoad = {
-        # 'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
-        # 'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
-        # 'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
-        # 'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
-        # 'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
-        # 'test_movies.json': 'test_reviews_restructured.json',
-        'data_full.json':'full_reviews_restructured.json'
-    }
-
-    for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
-
-        # Load the movies from the json file
-        # movieFile = data_dir / jsonMoviesFile
-        # load_movies(movieFile)
-  
-        # # load_reviews
-        reviewFile = data_dir / jsonReviewsFile
-        load_reviews(reviewFile)

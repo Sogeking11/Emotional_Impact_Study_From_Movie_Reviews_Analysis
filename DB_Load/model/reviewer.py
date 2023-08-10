@@ -1,5 +1,12 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Reviewer class.
+"""
+
+# Import packages and modules
+from sqlalchemy import Column,Integer, String
 from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
 
 
 # Define Reviewer table
