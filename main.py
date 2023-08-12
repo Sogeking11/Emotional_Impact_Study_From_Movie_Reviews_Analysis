@@ -37,7 +37,6 @@ if __name__ == '__main__':
     for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
 
         # files paths
-        
         movieFile = data_dir / jsonMoviesFile
         reviewFile = data_dir / jsonReviewsFile
 
