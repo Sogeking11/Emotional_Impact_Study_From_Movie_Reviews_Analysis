@@ -1,6 +1,22 @@
+import logging
 from pathlib import Path
 
 from DB_Load import load_movies, load_reviews
+
+# logging configuration
+logger = logging.getLogger(__name__)
+# creates Handlers
+handler_1 = logging.FileHandler(filename="logs/" + __name__ + ".log", mode="w")
+# setting handler
+handler_1.setLevel(logging.DEBUG)
+# logger level
+logger.setLevel(logging.INFO)
+# formatters + adding them on handlers
+formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler_1.setFormatter(formatter_1)
+logger.addHandler(handler_1)
+
+
 
 
 if __name__ == '__main__':
@@ -21,11 +37,14 @@ if __name__ == '__main__':
     for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
 
         # files paths
+        
         movieFile = data_dir / jsonMoviesFile
         reviewFile = data_dir / jsonReviewsFile
 
         # Load the movies
+        logger.info(f"Loading {movieFile}")
         load_movies(movieFile)
 
         # load_reviews
+        logger.info(f"Loading {reviewFile}")
         load_reviews(reviewFile)

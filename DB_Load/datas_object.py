@@ -6,7 +6,8 @@ It is used by functions load-Movies() and load_reviews() in load_from_JsonFiles 
 # import modules
 from datetime import date
 import logging
-
+import sys
+import json
 
 from DB_Load.model import Movie, Country, Genre, Keyword, Prod_Company,Participant
 
@@ -39,6 +40,34 @@ logger.addHandler(handler_1)
 logger.addHandler(handler_2)
 logger.addHandler(handler_3)
 
+
+def fileToJson(filePath):
+    """
+    This function loads a json file and returns the json object.
+
+    Args:
+        filePath (str): path of json file
+
+    Returns:
+        json_object (dict): json object of the file
+    
+    """
+    try:
+
+        with open(filePath, 'r', encoding='utf-8') as openfile:
+
+            # get json object from json file
+            json_object = json.load(openfile)
+                
+    except FileNotFoundError:
+        logger.error(f"the source file {filePath} does not exist.")
+        sys.exit(0)
+        
+    except Exception as e:
+        logger.error(f"An Error occured when opening source file:\n {e}")
+        sys.exit(0)
+    else:
+        return json_object
 
 
 def movie_instance(json_object):

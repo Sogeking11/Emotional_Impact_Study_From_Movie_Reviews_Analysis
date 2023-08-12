@@ -1,2 +1,3 @@
-from .load_from_JsonFiles import load_movies, load_reviews
+from .load_movies import load_movies
+from .load_reviews import load_reviews
 from .restruct_reviewsJsonFile import restruct_ReviewsJsonFile
