@@ -16,22 +16,18 @@ formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(mess
 handler_1.setFormatter(formatter_1)
 logger.addHandler(handler_1)
 
-
-
-
-if __name__ == '__main__':
-
+def load():
     # data dir path
     data_dir = Path("datas")
 
     filesToLoad = {
         'test_movies.json': 'test_reviews_restructured.json',
-        'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
-        'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
-        'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
-        'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
-        'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
-        'data_full.json':'full_reviews_restructured.json'
+        # 'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
+        # 'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
+        # 'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
+        # 'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
+        # 'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
+        # 'data_full.json':'full_reviews_restructured.json'
     }
 
     for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
@@ -47,3 +43,9 @@ if __name__ == '__main__':
         # load_reviews
         logger.info(f"Loading {reviewFile}")
         load_reviews(reviewFile)
+
+
+
+if __name__ == '__main__':
+
+        load()
