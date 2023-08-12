@@ -1,7 +1,16 @@
+"""
+This script aims to restructure the reviews json file produced from API.
+"""
+
+# Import Packages and modules
 import json
 import logging
 import pandas as pd
 import re
+from pathlib import Path
+
+
+
 
 def extract_source_string(url):
     """ 
@@ -19,24 +28,30 @@ def extract_source_string(url):
         return False
 
 
-def restruct_redaJsonFile(jsonFile):
+def restruct_ReviewsJsonFile(jsonFile):
     """Aims to restructured as needed the reviews json source file
-    produced by Reda.
+    produced from API.
+    This function will put in place where the source file is a new JsonFile
+    with the needed structure, its name will be formed with the source file name
+    where we add the _restructured at the end.
 
     Args:
-        jsonFile (json): malformed json file according to our needs
+        jsonFile (str): Path of the malformed json file according to our needs
     
     Returned:
-        json: restructured json file according to our needs
+        json: restructured json object according to our needs
     """
 
-    with open(jsonFile, 'r', encoding='utf-8') as openfile:
+    # make from filpath Path object
+    file_path = Path(jsonFile)
+
+    with open(file_path, 'r', encoding='utf-8') as openfile:
     
         # Reading from json file
         try:
             json_object = json.load(openfile,)
         except ValueError as e:
-            logging.error('invalid json: %s' % e)
+            logging.error('invalid json: %s' %e)
 
 
     # convert json object to a pandas dataframe
@@ -74,9 +89,11 @@ def restruct_redaJsonFile(jsonFile):
 
         
 
-    # write json to file
-    file_name = 'datas/test_reviews_restructured.json'
-    with open(file_name, 'w', encoding='utf-8') as outfile:
-        json.dump(restruct_json, outfile, ensure_ascii=False)
+    # create new filename
+    new_filename = str(file_path.stem) + '_restructured.json'
+    new_filename = file_path.parent / new_filename
+  
+    with open(new_filename, 'w', encoding='utf-8') as outfile:
+        json.dump(restruct_json, outfile, ensure_ascii=False, indent=4)
 
-    return file_name
+    return restruct_json

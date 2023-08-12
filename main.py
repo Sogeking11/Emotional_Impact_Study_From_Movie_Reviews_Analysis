@@ -1,73 +1,49 @@
 import logging
-from model.sqlalchemyconfig import *    # noqa: F403
-from load_from_JsonFiles import load_movies, load_reviews
-#from restruct_reviewsJsonFile import restruct_redaJsonFile
+from pathlib import Path
 
+from DB_Load import load_movies, load_reviews
 
-# configure logging
-logging.basicConfig(level=logging.DEBUG, filename="logs/log.log", filemode="w",
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+# logging configuration
+logger = logging.getLogger(__name__)
+# creates Handlers
+handler_1 = logging.FileHandler(filename="logs/" + __name__ + ".log", mode="w")
+# setting handler
+handler_1.setLevel(logging.DEBUG)
+# logger level
+logger.setLevel(logging.INFO)
+# formatters + adding them on handlers
+formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler_1.setFormatter(formatter_1)
+logger.addHandler(handler_1)
+
 
 
 
 if __name__ == '__main__':
 
-     # Create the tables in the database
-     Base.metadata.create_all(engine)  # noqa: F405
+    # data dir path
+    data_dir = Path("datas")
 
-     # # Reviews data restructuring
-     # #filename = restruct_redaJsonFile('datas/test_reviews.json')
-     
+    filesToLoad = {
+        'test_movies.json': 'test_reviews_restructured.json',
+        'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
+        'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
+        'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
+        'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
+        'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
+        'data_full.json':'full_reviews_restructured.json'
+    }
 
-     # dataset test
+    for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
 
-     # Load the data from the json file
-     load_movies('datas/test-urls_neg_dataset.json')
-     logging.info("Load movies from test-urls_neg_dataset.json")
-     # load_reviews
-     load_reviews("datas/test-urls_neg_Reviews_dataset.json")
-     logging.info("Load reviews from test-urls_neg_Reviews_dataset.json")
+        # files paths
+        movieFile = data_dir / jsonMoviesFile
+        reviewFile = data_dir / jsonReviewsFile
 
-     # Load the data from the json file
-     load_movies('datas/test-urls_pos_dataset.json')
-     logging.info("Load movies from test-urls_pos_dataset.json")
-     # load_reviews
-     load_reviews("datas/test-urls_pos_Reviews_dataset.json")
-     logging.info("Load reviews from test-urls_pos_Reviews_dataset.json")
+        # Load the movies
+        logger.info(f"Loading {movieFile}")
+        load_movies(movieFile)
 
-
-     # dataset train
-
-     # Load the data from the json file
-     load_movies('datas/train-urls_neg_dataset.json')
-     logging.info("Load movies from train-urls_neg_dataset.json")
-     # load_reviews
-     load_reviews("datas/train-urls_neg_Reviews_dataset.json")
-     logging.info("Load reviews from train-urls_neg_Reviews_dataset.json")
-
-     # Load the data from the json file
-     load_movies('datas/train-urls_pos_dataset.json')
-     logging.info("Load movies from train-urls_pos_dataset.json")
-     # load_reviews
-     load_reviews("datas/train-urls_pos_Reviews_dataset.json")
-     logging.info("Load reviews from train-urls_pos_Reviews_dataset.json")
-
-     # Load the data from the json file
-     load_movies('datas/train-urls_unsup_dataset.json')
-     logging.info("Load movies from train-urls_unsup_dataset.json")
-     # load_reviews
-     load_reviews("datas/train-urls_unsup_Reviews_dataset.json")
-     logging.info("Load movies from train-urls_unsup_dataset.json")
-
-
-
-     # from scrapingTest
-
-     # Load the data from the json file
-     load_movies('datas/test_movies.json')
-     logging.info("Load movies from test_movies.json")
-     # load_reviews
-     load_reviews("datas/test_reviews_restructured.json")
-     logging.info("Load reviews from test_reviews_restructured.json")
-
-
+        # load_reviews
+        logger.info(f"Loading {reviewFile}")
+        load_reviews(reviewFile)
