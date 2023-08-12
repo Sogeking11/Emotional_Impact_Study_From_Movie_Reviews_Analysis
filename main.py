@@ -17,6 +17,10 @@ handler_1.setFormatter(formatter_1)
 logger.addHandler(handler_1)
 
 def load():
+    """
+    load movies and their reviews on db
+    """
+    
     # data dir path
     data_dir = Path("datas")
 
@@ -48,4 +52,5 @@ def load():
 
 if __name__ == '__main__':
 
+        # load movie
         load()
