@@ -1,6 +1,15 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Role class.
+"""
 
-# Define Rôle table
+# Import packages and modules
+from sqlalchemy import Column,Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
+
+
+# Define Role table
 class Role(Base):
     __tablename__ = "role"
 

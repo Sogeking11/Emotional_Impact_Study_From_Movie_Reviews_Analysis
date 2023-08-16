@@ -3,6 +3,8 @@
 
 # my ignored files
 csvfile_to_dict.py
+
+datas/
 docker/data/api_keys.py
 docker/data/*.json
 

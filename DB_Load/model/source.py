@@ -1,7 +1,15 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Source class.
+"""
+
+# Import packages and modules
+from sqlalchemy import Column,Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
 
 
-# Define Review table
+# Define Source table
 class Source(Base):
     __tablename__ = 'source'
 

@@ -1,5 +1,13 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Country class.
+"""
 
+# Import packages and modules
+from sqlalchemy import Column,Integer, String
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
+from .association import movie_has_country_link
 
 
 # Define Country table

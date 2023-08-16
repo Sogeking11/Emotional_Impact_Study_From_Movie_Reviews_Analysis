@@ -1,7 +1,15 @@
-from .sqlalchemyconfig import *
+"""
+This module defines the Participant class.
+"""
+
+# Import packages and modules
+from sqlalchemy import Column,Integer, String, SmallInteger, Float
+from sqlalchemy.orm import relationship
+
+from .sqlalchemyconfig import Base
 
 
-# Define Country table
+# Define Participant table
 class Participant(Base):
     __tablename__ = 'participant'
 
