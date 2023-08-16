@@ -1,0 +1,17 @@
+version: "3.1"
+
+# list of containers
+services:
+  # pyspark container
+  pyspark:
+    image:  jupyter/all-spark-notebook:latest
+    restart: always
+    # volume addition
+    volumes:
+      - ./data:/home/jovyan/data
+      # - ./config:/config
+    # command: pip install -r /chonfig/requirements.txt
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+
