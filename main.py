@@ -22,12 +22,12 @@ def load():
 
     filesToLoad = {
         'test_movies.json': 'test_reviews_restructured.json',
-        # 'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
-        # 'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
-        # 'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
-        # 'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
-        # 'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
-        # 'data_full.json':'full_reviews_restructured.json'
+        'test-urls_neg_dataset.json': 'test-urls_neg_Reviews_dataset.json',
+        'test-urls_pos_dataset.json': 'test-urls_pos_Reviews_dataset.json',
+        'train-urls_neg_dataset.json': 'train-urls_neg_Reviews_dataset.json',
+        'train-urls_pos_dataset.json': 'train-urls_pos_Reviews_dataset.json',
+        'train-urls_unsup_dataset.json': 'train-urls_unsup_Reviews_dataset.json',
+        'data_full.json':'full_reviews_restructured.json'
     }
 
     for jsonMoviesFile, jsonReviewsFile in filesToLoad.items():
