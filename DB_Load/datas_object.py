@@ -81,6 +81,7 @@ def movie_instance(json_object):
     """
 
     # parameters list init
+    release_date = date(2050,3,21)
     param_dict = {  'title': "None",
                     'certification': "None",
                     'revenue': 0,
