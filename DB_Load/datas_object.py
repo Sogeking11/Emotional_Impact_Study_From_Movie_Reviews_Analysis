@@ -79,34 +79,26 @@ def movie_instance(json_object):
     Returns:
         Movie object from sqlamlchemy mapping: image of the Movie table on DB
     """
-    # parameters initialization
-    title = 'None'
-    certification = 'None'
-    revenue = 0
-    budget = 0
-    review_score = 0.0
-    release_date = date(2050, 3, 21) # printemps 2050 means no date from source
-    popularity = 0.0
-    runtime = 0
-    synopsis = 'None'
 
-    # parameters list
-    parameters_list = [ 'title',
-                        'certification',
-                        'revenue',
-                        'budget',
-                        'review_score',
-                        'popularity',
-                        'runtime',
-                        'synopsis']
+    # parameters list init
+    release_date = date(2050,3,21)
+    param_dict = {  'title': "None",
+                    'certification': "None",
+                    'revenue': 0,
+                    'budget': 0,
+                    'review_score': 0.0,
+                    'popularity': 0.0,
+                    'runtime': 0,
+                    'synopsis': "None"
+                        }
     
-    for parameter in parameters_list:
+    for parameter in param_dict.keys():
 
         # In case the parameter do not exist
-        parameter_value = key_exist_or_not(json_object, parameter)
+        value = key_exist_or_not(json_object, parameter)
 
-        if parameter_value is not None:
-            parameter = parameter_value
+        if value is not None:
+            param_dict[parameter] = value
 
 
     # same treatment as above except the case on date is ''    
@@ -118,15 +110,15 @@ def movie_instance(json_object):
 
 
     # Table movie
-    movie_obj = Movie(title=title,
-                      certification=certification,
-                      revenue=revenue,
-                      budget=budget,
-                      review_score=review_score,
+    movie_obj = Movie(title=param_dict["title"],
+                      certification=param_dict["certification"],
+                      revenue=param_dict["revenue"],
+                      budget=param_dict["budget"],
+                      review_score=param_dict["review_score"],
                       release_date=release_date,
-                      popularity=popularity,
-                      runtime=runtime,
-                      synopsis=synopsis
+                      popularity=param_dict["popularity"],
+                      runtime=param_dict["runtime"],
+                      synopsis=param_dict["synopsis"]
                       )
     
     return movie_obj
