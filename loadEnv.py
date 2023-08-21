@@ -16,4 +16,5 @@ def loadEnv(varenv:str):
         string: env var value
     """
     load_dotenv() # CHARGE LE FICHIER .env
-    return os.getenv(varenv)
+    mystring = str(os.getenv(varenv))
+    return mystring

@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+from loadEnv import loadEnv
 from DB_Load import load_movies, load_reviews
 
 # logging configuration
@@ -18,7 +19,7 @@ logger.addHandler(handler_1)
 
 def load():
     # data dir path
-    data_dir = Path("datas")
+    data_dir = Path(loadEnv("data_path"))
 
     filesToLoad = {
         'test_movies.json': 'test_reviews_restructured.json',
@@ -48,5 +49,4 @@ def load():
 
 if __name__ == '__main__':
 
-        #load()
-        print("Hello my friend")
+        load()

@@ -1,0 +1,21 @@
+services:
+  # conteneur pour l'application de stockage
+  stock:
+    # mon image créé précédement
+    image: stockapp
+    container_name: stockapp
+
+    volumes:
+      - "./datas:/datas"
+      - "./logs:/logs"
+    # deploiement dans un réseau
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    volumes:
+      - /dump-db:/docker.entrypoint.d
+    

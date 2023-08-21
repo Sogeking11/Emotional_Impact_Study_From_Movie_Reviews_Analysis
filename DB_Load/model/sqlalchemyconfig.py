@@ -12,11 +12,11 @@ from loadEnv import loadEnv
 
 # Create the SQLAlchemy engine
 engine = create_engine("mysql+mysqlconnector://" + loadEnv("DB_USER")
-                                                 + ":" + loadEnv("DB_PASSWORD")
-                                                 + "@" + loadEnv("DB_HOST")
-                                                 + ":" + loadEnv("DB_PORT") + "/"
-                                                 + loadEnv("DB_NAME")
-                                                 )
+                                                + ":" + loadEnv("DB_PASSWORD")
+                                                + "@" + loadEnv("DB_HOST")
+                                                + ":" + loadEnv("DB_PORT") + "/"
+                                                + loadEnv("DB_NAME")
+                                                )
 
 
 
@@ -28,6 +28,8 @@ def get_session() -> sessionmaker:
     This function returns a session to query the database.
     :return: session
     """
+
+
 
     # Create the tables in the database if doesn't exist
     Base.metadata.create_all(engine)
