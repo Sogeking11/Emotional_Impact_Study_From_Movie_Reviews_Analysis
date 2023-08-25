@@ -23,6 +23,14 @@ logger.addHandler(handler_1)
 # for GCP to lesson as a web server
 app = Flask(__name__)
 
+# route /
+@app.route('/')
+def hello():
+    """Return a friendly HTTP greeting."""
+    message = "Hello my Friend, it's running!"
+    return render_template('index.html',message=message,)
+
+
 def load():
     # data dir path
     data_dir = Path(loadEnv("DATAPATH"))
