@@ -1,6 +1,9 @@
 import logging
 from pathlib import Path
 
+import os
+from flask import Flask, render_template
+
 from loadEnv import loadEnv
 from DB_Load import load_movies, load_reviews
 
@@ -17,9 +20,12 @@ formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(mess
 handler_1.setFormatter(formatter_1)
 logger.addHandler(handler_1)
 
+# for GCP to lesson as a web server
+app = Flask(__name__)
+
 def load():
     # data dir path
-    data_dir = Path(loadEnv("data_path"))
+    data_dir = Path(loadEnv("DATAPATH"))
 
     filesToLoad = {
         'test_movies.json': 'test_reviews_restructured.json',
@@ -49,4 +55,11 @@ def load():
 
 if __name__ == '__main__':
 
-        load()
+    # load()
+
+    # check
+    print("Hello World !")
+    # lesson on port
+    # GCP image mandatory
+    server_port = os.environ.get('PORT', '8080')
+    app.run(debug=False, port=server_port, host='0.0.0.0')
