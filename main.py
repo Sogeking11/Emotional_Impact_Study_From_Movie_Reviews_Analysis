@@ -20,16 +20,6 @@ formatter_1 = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(mess
 handler_1.setFormatter(formatter_1)
 logger.addHandler(handler_1)
 
-# for GCP to lesson as a web server
-app = Flask(__name__)
-
-# route /
-@app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    message = "Hello my Friend, it's running!"
-    return render_template('index.html',message=message,)
-
 
 def load():
     # data dir path
@@ -59,15 +49,26 @@ def load():
         logger.info(f"Loading {reviewFile}")
         load_reviews(reviewFile)
 
+# for GCP to lesson as a web server
+app = Flask(__name__)
+
+# route /
+@app.route('/')
+def hello():
+    """Return a friendly HTTP greeting."""
+    message = "Hello my Friend, This message just before load() function call, hope db is is feeding now!"
+    load()
+    return render_template('index.html',message=message,)
+
+
 
 
 if __name__ == '__main__':
-
-    # load()
-
+    
     # check
     print("Hello World !")
-    # lesson on port
-    # GCP image mandatory
+
+    # lesson on port as a web service
+    # GCP Cloud service mandatory
     server_port = os.environ.get('PORT', '8080')
     app.run(debug=False, port=server_port, host='0.0.0.0')
