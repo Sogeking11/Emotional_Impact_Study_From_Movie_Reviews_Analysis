@@ -54,7 +54,8 @@ def fileToJson(filePath):
     """
     try:
 
-        with open(filePath, 'r', encoding='utf-8') as openfile:
+        # here it is a gcp bucket file object that is use as filepath
+        with filePath as openfile:
 
             # get json object from json file
             json_object = json.load(openfile)

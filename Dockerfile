@@ -1,4 +1,6 @@
-FROM python:3
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED True
 
 WORKDIR /usr/src/app
 
@@ -7,4 +9,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./main.py" ]
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
+#CMD [ "python", "./main.py" ]
