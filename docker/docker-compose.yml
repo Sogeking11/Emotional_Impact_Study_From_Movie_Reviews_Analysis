@@ -9,8 +9,8 @@ services:
     # volume addition
     volumes:
       - ./data:/home/jovyan/data
-      # - ./config:/config
-    # command: pip install -r /chonfig/requirements.txt
+      - ./config:/config
+    command: pip install -r /config/requirements.txt
     ports:
       - "8888:8888"
       - "4040:4040"

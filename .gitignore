@@ -6,6 +6,7 @@ csvfile_to_dict.py
 
 datas/
 docker/data/api_keys.py
+docker/data/DB_credentials.py
 docker/data/*.json
 
 ### Python ###
